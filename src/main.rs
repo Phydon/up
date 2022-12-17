@@ -26,16 +26,16 @@ fn main() {
         .unwrap();
 
     let commands = vec![
-        // "echo \"START1\";Start-sleep -Seconds(2);echo \"END1\"".to_string(),
-        // "echo \"START2\";Start-sleep -Seconds(3);echo \"END2\"".to_string(),
-        // "echo \"START3\";Start-sleep -Seconds(2);echo \"END3\"".to_string(),
-        // "echo \"START4\";Start-sleep -Seconds(1);echo \"END4\"".to_string(),
-        // "echo \"START5\";Start-sleep -Seconds(4);echo \"END5\"".to_string(),
-        "Start-sleep -seconds 4".to_string(),
-        "Start-sleep -seconds 2".to_string(),
-        "Start-sleep -seconds 2".to_string(),
-        "Start-sleep -seconds 1".to_string(),
-        "Start-sleep -seconds 3".to_string(),
+        "echo \"START1\";Start-sleep -Seconds(2);echo \"END1\"".to_string(),
+        "echo \"START2\";Start-sleep -Seconds(3);echo \"END2\"".to_string(),
+        "echo \"START3\";Start-sleep -Seconds(2);echo \"END3\"".to_string(),
+        "echo \"START4\";Start-sleep -Seconds(1);echo \"END4\"".to_string(),
+        "echo \"START5\";Start-sleep -Seconds(4);echo \"END5\"".to_string(),
+        // "Start-sleep -seconds 4".to_string(),
+        // "Start-sleep -seconds 2".to_string(),
+        // "Start-sleep -seconds 5".to_string(),
+        // "Start-sleep -seconds 1".to_string(),
+        // "Start-sleep -seconds 3".to_string(),
         // "scoop update".to_string(),
         // "scoop status".to_string(),
         // "winget upgrade".to_string(),
@@ -43,7 +43,6 @@ fn main() {
         // "vim -c PlugUpdate -c qa".to_string(),
         // "nvim -c PlugUpdate -c qa".to_string(),
         // "ghcup upgrade".to_string(),
-        // "Start-sleep -seconds 5".to_string(),
     ];
 
     if let Err(err) = run_cmd(commands) {
@@ -51,13 +50,6 @@ fn main() {
         process::exit(1);
     }
 }
-
-// fn run_cmd(commands: Vec<String>) -> Result<(), Box<dyn Error>> {
-//     let args: String = collect_args(commands)?;
-//     cmd(args.as_str())?;
-
-//     Ok(())
-// }
 
 fn run_cmd(commands: Vec<String>) -> Result<(), Box<dyn Error>> {
     println!("{}", "::: STARTING UPDATE".bold().yellow());
@@ -81,59 +73,11 @@ fn cmd(args: &str) -> Result<(), Box<dyn Error>> {
     Ok(())
 }
 
-// fn collect_args(args_list: Vec<String>) -> Result<String, Box<dyn Error>> {
-//     let mut combiner = String::new();
-//     for arg in args_list {
-//         combiner.push_str(&arg);
-//         combiner.push_str("; ");
-//     }
-
-//     Ok(combiner)
-// }
-
-// fn progress_bar(commands: Vec<String>, num: u64) -> Result<Arc<MultiProgress>, Box<dyn Error>> {
-//     let started = Instant::now();
-
-//     let m = Arc::new(MultiProgress::new());
-//     let sty = ProgressStyle::with_template(
-//         "{spinner:.green} [{elapsed_precise}] {bar:40.cyan/blue} {pos:>5}/{len:5} {eta:5} {msg}",
-//     )
-//     .unwrap()
-//     .progress_chars("#>-");
-
-//     let pb = m.add(ProgressBar::new(num));
-//     pb.set_style(sty.clone());
-
-//     pb.tick();
-//     for arg in commands {
-//         cmd(arg.as_str())?;
-
-//         // let pb2 = m.add(ProgressBar::new(128));
-//         // pb2.set_style(sty.clone());
-//         // for _ in 0..128 {
-//         //     pb2.inc(1);
-//         //     thread::sleep(Duration::from_millis(5));
-//         // }
-//         // pb2.finish();
-
-//         pb.inc(1);
-//     }
-//     pb.finish_with_message(format!("{}", "done".bold().green()));
-
-//     println!(
-//         "{} {}",
-//         "::: DONE IN".bold().green(),
-//         HumanDuration(started.elapsed()).to_string().bold().green()
-//     );
-
-//     Ok(m)
-// }
-
 fn progress_bar(commands: Vec<String>, num: u64) -> Result<Arc<MultiProgress>, Box<dyn Error>> {
     let started = Instant::now();
-    let spinner_style = ProgressStyle::with_template("{prefix:.bold.dim} {spinner} {wide_msg}")
-        .unwrap()
-        .tick_chars("⠁⠂⠄⡀⢀⠠⠐⠈ ");
+    let spinner_style =
+        ProgressStyle::with_template("{prefix:.bold.dim} {spinner} {wide_msg}").unwrap();
+    // .tick_chars("⠁⠂⠄⡀⢀⠠⠐⠈ ");
 
     let m = Arc::new(MultiProgress::new());
     let sty = ProgressStyle::with_template(
@@ -143,28 +87,23 @@ fn progress_bar(commands: Vec<String>, num: u64) -> Result<Arc<MultiProgress>, B
     .progress_chars("#>-");
 
     let pb = m.add(ProgressBar::new(num));
-    // TODO remove clone?
-    pb.set_style(sty.clone());
+    pb.set_style(sty);
 
     pb.tick();
-    // let handles: Vec<_> = (0..num)
     let handles: Vec<_> = commands
         .into_iter()
         .map(|arg| {
-            // // FIXME
-            let pb = ProgressBar::new_spinner();
-            pb.enable_steady_tick(Duration::from_millis(200));
-            pb.set_style(spinner_style.clone());
-            // let pb = m.add(ProgressBar::new(num));
-            // pb.set_style(spinner_style.clone());
-            pb.set_prefix(format!("[..]"));
+            let pb = pb.clone();
+            let spinner = m.add(ProgressBar::new_spinner());
+            spinner.enable_steady_tick(Duration::from_millis(200));
+            spinner.set_style(spinner_style.clone());
+            spinner.set_prefix(format!("[..]"));
             thread::spawn(move || {
-                pb.set_message(format!("{}", "updating".red()));
-                // pb.inc(1);
-                pb.tick();
+                spinner.set_message(format!("{}", "updating".yellow()));
+                spinner.tick();
                 cmd(arg.as_str()).unwrap();
-                pb.finish_with_message(format!("{}", "done".bold().green()));
-                // pb.finish();
+                spinner.finish_with_message(format!("{}", "done".bold().green()));
+                pb.inc(1);
             })
         })
         .collect();
@@ -175,7 +114,7 @@ fn progress_bar(commands: Vec<String>, num: u64) -> Result<Arc<MultiProgress>, B
 
     pb.finish_with_message(format!("{}", "done".bold().green()));
 
-    m.clear().unwrap();
+    // m.clear().unwrap();
 
     println!(
         "{} {}",
