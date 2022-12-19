@@ -1,6 +1,3 @@
-// hide console window on Windows in release
-// #![windows_subsystem = "windows"]
-
 use colored::*;
 use flexi_logger::{detailed_format, Duplicate, FileSpec, Logger};
 use indicatif::{HumanDuration, MultiProgress, ProgressBar, ProgressStyle};
@@ -14,6 +11,30 @@ use std::{
     time::{Duration, Instant},
 };
 
+struct Program {
+    name: String,
+    collected_cmds: String,
+}
+
+impl Program {
+    pub fn new(name: &str, cmds: Vec<&str>) -> Program {
+        let mut collected_cmds = String::new();
+        for cmd in cmds {
+            collected_cmds.push_str(name);
+            collected_cmds.push_str(" ");
+            collected_cmds.push_str(cmd);
+            collected_cmds.push_str(";");
+        }
+
+        let name = name.to_string();
+
+        Program {
+            name,
+            collected_cmds,
+        }
+    }
+}
+
 fn main() {
     // initialize the logger
     let _logger = Logger::try_with_str("info") // log info, warn and error
@@ -25,33 +46,29 @@ fn main() {
         .start()
         .unwrap();
 
-    let commands = vec![
-        "echo \"START1\";Start-sleep -Seconds(2);echo \"END1\"".to_string(),
-        "echo \"START2\";Start-sleep -Seconds(3);echo \"END2\"".to_string(),
-        "echo \"START3\";Start-sleep -Seconds(2);echo \"END3\"".to_string(),
-        "echo \"START4\";Start-sleep -Seconds(1);echo \"END4\"".to_string(),
-        "echo \"START5\";Start-sleep -Seconds(4);echo \"END5\"".to_string(),
-        // "Start-sleep -seconds 4".to_string(),
-        // "Start-sleep -seconds 2".to_string(),
-        // "Start-sleep -seconds 5".to_string(),
-        // "Start-sleep -seconds 1".to_string(),
-        // "Start-sleep -seconds 3".to_string(),
-        // "scoop update".to_string(),
-        // "scoop status".to_string(),
-        // "winget upgrade".to_string(),
-        // "rustup update".to_string(),
-        // "vim -c PlugUpdate -c qa".to_string(),
-        // "nvim -c PlugUpdate -c qa".to_string(),
-        // "ghcup upgrade".to_string(),
-    ];
+    // set up the programs
 
-    if let Err(err) = run_cmd(commands) {
+    // let test1 = Program::new("Start-Sleep", vec![" -Seconds(2)"]);
+    // let test2 = Program::new("Start-Sleep", vec![" -Seconds(3)"]);
+    // let test3 = Program::new("Start-Sleep", vec![" -Seconds(4)"]);
+    // let commands: Vec<Program> = vec![test1, test2, test3];
+
+    let scoop = Program::new("scoop", vec!["update", "status"]);
+    let winget = Program::new("winget", vec!["upgrade"]);
+    let rustup = Program::new("rustup", vec!["update"]);
+    let vim = Program::new("vim", vec!["-c PlugUpdate -c qa"]);
+    let nvim = Program::new("nvim", vec!["-c PlugUpdate -c qa"]);
+    let ghcup = Program::new("ghcup", vec!["update"]);
+
+    let commands: Vec<Program> = vec![scoop, winget, rustup, vim, nvim, ghcup];
+
+    if let Err(err) = update(commands) {
         error!("Error executing cmds: {}", err);
         process::exit(1);
     }
 }
 
-fn run_cmd(commands: Vec<String>) -> Result<(), Box<dyn Error>> {
+fn update(commands: Vec<Program>) -> Result<(), Box<dyn Error>> {
     println!("{}", "::: STARTING UPDATE".bold().yellow());
 
     let num = commands.len() as u64;
@@ -60,9 +77,9 @@ fn run_cmd(commands: Vec<String>) -> Result<(), Box<dyn Error>> {
     Ok(())
 }
 
-fn cmd(args: &str) -> Result<(), Box<dyn Error>> {
+fn run_cmd(cmd: &str) -> Result<(), Box<dyn Error>> {
     if cfg!(target_os = "windows") {
-        Command::new("powershell").args(["-c", args]).status()?
+        Command::new("powershell").args(["-c", cmd]).status()?
     } else {
         Command::new("sh")
             .arg("-c")
@@ -73,7 +90,7 @@ fn cmd(args: &str) -> Result<(), Box<dyn Error>> {
     Ok(())
 }
 
-fn progress_bar(commands: Vec<String>, num: u64) -> Result<Arc<MultiProgress>, Box<dyn Error>> {
+fn progress_bar(commands: Vec<Program>, num: u64) -> Result<Arc<MultiProgress>, Box<dyn Error>> {
     let started = Instant::now();
     let spinner_style =
         ProgressStyle::with_template("{prefix:.bold.dim} {spinner} {wide_msg}").unwrap();
@@ -81,10 +98,11 @@ fn progress_bar(commands: Vec<String>, num: u64) -> Result<Arc<MultiProgress>, B
 
     let m = Arc::new(MultiProgress::new());
     let sty = ProgressStyle::with_template(
-        "{spinner:.green} [{elapsed_precise}] {bar:40.cyan/blue} {pos:>5}/{len:5} {eta:5} {msg}",
+        "{spinner:.green} [{elapsed_precise}] {bar:40.yellow/red} {pos:>5}/{len:5} {eta:5} {msg}",
     )
     .unwrap()
-    .progress_chars("#>-");
+    // .progress_chars("#>-");
+    .progress_chars("=>-");
 
     let pb = m.add(ProgressBar::new(num));
     pb.set_style(sty);
@@ -99,9 +117,9 @@ fn progress_bar(commands: Vec<String>, num: u64) -> Result<Arc<MultiProgress>, B
             spinner.set_style(spinner_style.clone());
             spinner.set_prefix(format!("[..]"));
             thread::spawn(move || {
-                spinner.set_message(format!("{}", "updating".yellow()));
+                spinner.set_message(format!("{} {}", "updating".yellow(), arg.name));
                 spinner.tick();
-                cmd(arg.as_str()).unwrap();
+                run_cmd(arg.collected_cmds.as_str()).unwrap();
                 spinner.finish_with_message(format!("{}", "done".bold().green()));
                 pb.inc(1);
             })
