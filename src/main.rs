@@ -120,7 +120,7 @@ fn progress_bar(commands: Vec<Program>, num: u64) -> Result<Arc<MultiProgress>, 
                 spinner.set_message(format!("{} {}", "updating".yellow(), arg.name));
                 spinner.tick();
                 run_cmd(arg.collected_cmds.as_str()).unwrap();
-                spinner.finish_with_message(format!("{}", "done".bold().green()));
+                spinner.finish_with_message(format!("{} {}", arg.name, "done".bold().green()));
                 pb.inc(1);
             })
         })
