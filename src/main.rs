@@ -20,8 +20,6 @@ impl Program {
     pub fn new(name: &str, cmds: Vec<&str>) -> Program {
         let mut collected_cmds = String::new();
         for cmd in cmds {
-            collected_cmds.push_str(name);
-            collected_cmds.push_str(" ");
             collected_cmds.push_str(cmd);
             collected_cmds.push_str(";");
         }
@@ -53,14 +51,24 @@ fn main() {
     // let test3 = Program::new("Start-Sleep", vec![" -Seconds(4)"]);
     // let commands: Vec<Program> = vec![test1, test2, test3];
 
-    let scoop = Program::new("scoop", vec!["update", "status"]);
-    let winget = Program::new("winget", vec!["upgrade"]);
-    let rustup = Program::new("rustup", vec!["update"]);
-    let vim = Program::new("vim", vec!["-c PlugUpdate -c qa"]);
-    let nvim = Program::new("nvim", vec!["-c PlugUpdate -c qa"]);
-    let ghcup = Program::new("ghcup", vec!["update"]);
+    let scoop = Program::new("scoop", vec!["scoop update --quiet"]);
+    let winget = Program::new("winget", vec!["winget upgrade"]);
+    let rustup = Program::new("rustup", vec!["rustup --quiet update"]);
+    let ghcup = Program::new("ghcup", vec!["ghcup update"]);
+    let vim = Program::new(
+        "vim",
+        vec!["Start-Process vim -ArgumentList '-c PlugUpdate -c qa'"],
+    );
+    let nvim = Program::new(
+        "nvim",
+        vec!["Start-Process nvim -ArgumentList '-c PlugUpdate -c qa'"],
+    );
+    let pip = Program::new(
+        "pip",
+        vec!["Start-Process py -ArgumentList '-m pip install --quiet --upgrade pip'"],
+    );
 
-    let commands: Vec<Program> = vec![scoop, winget, rustup, vim, nvim, ghcup];
+    let commands: Vec<Program> = vec![scoop, winget, rustup, ghcup, vim, nvim, pip];
 
     if let Err(err) = update(commands) {
         error!("Error executing cmds: {}", err);
