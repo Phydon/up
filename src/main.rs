@@ -64,12 +64,6 @@ fn main() {
 
     // set up the programs
 
-    // FIXME add executer and start_extern variables
-    // let test1 = Program::new("sleep", Start-Sleep", false, vec![" -Seconds(2)"]);
-    // let test2 = Program::new("sleep", Start-Sleep", false, vec![" -Seconds(3)"]);
-    // let test3 = Program::new("sleep", Start-Sleep", false, vec![" -Seconds(4)"]);
-    // let commands: Vec<Program> = vec![test1, test2, test3];
-
     let scoop = Program::new("scoop", "scoop", true, vec!["update --quiet"]);
     let winget = Program::new("winget", "winget", true, vec!["upgrade"]);
     let rust = Program::new("rust", "rustup", true, vec!["--quiet update"]);
@@ -84,6 +78,12 @@ fn main() {
     );
 
     let commands: Vec<Program> = vec![scoop, winget, rust, haskell, vim, nvim, pip];
+
+    // TESTS
+    // let test1 = Program::new("sleep", Start-Sleep", false, vec![" -Seconds(2)"]);
+    // let test2 = Program::new("sleep", Start-Sleep", false, vec![" -Seconds(3)"]);
+    // let test3 = Program::new("sleep", Start-Sleep", false, vec![" -Seconds(4)"]);
+    // let commands: Vec<Program> = vec![test1, test2, test3];
 
     if let Err(err) = update(commands) {
         error!("Error executing cmds: {}", err);
