@@ -13,21 +13,39 @@ use std::{
 
 struct Program {
     name: String,
+    start_extern: bool,
     collected_cmds: String,
 }
 
 impl Program {
-    pub fn new(name: &str, cmds: Vec<&str>) -> Program {
+    pub fn new(name: &str, executer: &str, start_extern: bool, cmds: Vec<&str>) -> Program {
         let mut collected_cmds = String::new();
-        for cmd in cmds {
-            collected_cmds.push_str(cmd);
-            collected_cmds.push_str(";");
+        match start_extern {
+            true => {
+                for cmd in cmds {
+                    collected_cmds.push_str("Start-Process ");
+                    collected_cmds.push_str(executer);
+                    collected_cmds.push_str(" -ArgumentList '");
+                    collected_cmds.push_str(cmd);
+                    collected_cmds.push_str("'");
+                    collected_cmds.push_str(";");
+                }
+            }
+            false => {
+                for cmd in cmds {
+                    collected_cmds.push_str(executer);
+                    collected_cmds.push_str(" ");
+                    collected_cmds.push_str(cmd);
+                    collected_cmds.push_str(";");
+                }
+            }
         }
 
         let name = name.to_string();
 
         Program {
             name,
+            start_extern,
             collected_cmds,
         }
     }
@@ -46,29 +64,26 @@ fn main() {
 
     // set up the programs
 
-    // let test1 = Program::new("Start-Sleep", vec![" -Seconds(2)"]);
-    // let test2 = Program::new("Start-Sleep", vec![" -Seconds(3)"]);
-    // let test3 = Program::new("Start-Sleep", vec![" -Seconds(4)"]);
+    // FIXME add executer and start_extern variables
+    // let test1 = Program::new("sleep", Start-Sleep", false, vec![" -Seconds(2)"]);
+    // let test2 = Program::new("sleep", Start-Sleep", false, vec![" -Seconds(3)"]);
+    // let test3 = Program::new("sleep", Start-Sleep", false, vec![" -Seconds(4)"]);
     // let commands: Vec<Program> = vec![test1, test2, test3];
 
-    let scoop = Program::new("scoop", vec!["scoop update --quiet"]);
-    let winget = Program::new("winget", vec!["winget upgrade"]);
-    let rustup = Program::new("rustup", vec!["rustup --quiet update"]);
-    let ghcup = Program::new("ghcup", vec!["ghcup update"]);
-    let vim = Program::new(
-        "vim",
-        vec!["Start-Process vim -ArgumentList '-c PlugUpdate -c qa'"],
-    );
-    let nvim = Program::new(
-        "nvim",
-        vec!["Start-Process nvim -ArgumentList '-c PlugUpdate -c qa'"],
-    );
+    let scoop = Program::new("scoop", "scoop", true, vec!["update --quiet"]);
+    let winget = Program::new("winget", "winget", true, vec!["upgrade"]);
+    let rust = Program::new("rust", "rustup", true, vec!["--quiet update"]);
+    let haskell = Program::new("haskel", "ghcup", true, vec!["update"]);
+    let vim = Program::new("vim", "vim", true, vec!["-c PlugUpdate -c qa"]);
+    let nvim = Program::new("nvim", "nvim", true, vec!["-c PlugUpdate -c qa"]);
     let pip = Program::new(
         "pip",
-        vec!["Start-Process py -ArgumentList '-m pip install --quiet --upgrade pip'"],
+        "py",
+        true,
+        vec!["-m pip install --quiet --upgrade pip"],
     );
 
-    let commands: Vec<Program> = vec![scoop, winget, rustup, ghcup, vim, nvim, pip];
+    let commands: Vec<Program> = vec![scoop, winget, rust, haskell, vim, nvim, pip];
 
     if let Err(err) = update(commands) {
         error!("Error executing cmds: {}", err);
@@ -128,7 +143,14 @@ fn progress_bar(commands: Vec<Program>, num: u64) -> Result<Arc<MultiProgress>, 
                 spinner.set_message(format!("{} {}", "updating".yellow(), arg.name));
                 spinner.tick();
                 run_cmd(arg.collected_cmds.as_str()).unwrap();
-                spinner.finish_with_message(format!("{} {}", arg.name, "done".bold().green()));
+                spinner.finish_with_message(match arg.start_extern {
+                    true => {
+                        format!("{} {}", arg.name, "started".green())
+                    }
+                    false => {
+                        format!("{} {}", arg.name, "done".bold().green())
+                    }
+                });
                 pb.inc(1);
             })
         })
@@ -144,7 +166,7 @@ fn progress_bar(commands: Vec<Program>, num: u64) -> Result<Arc<MultiProgress>, 
 
     println!(
         "{} {}",
-        "::: DONE IN".bold().green(),
+        "::: ALL STARTED IN".bold().green(),
         HumanDuration(started.elapsed()).to_string().bold().green()
     );
 
