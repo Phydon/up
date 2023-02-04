@@ -63,19 +63,13 @@ fn main() {
         .unwrap();
 
     // set up the programs
-
-    let scoop = Program::new("scoop", "scoop", true, vec!["update --quiet"]);
+    let scoop = Program::new("scoop", "scoop", true, vec!["update --all"]);
     let winget = Program::new("winget", "winget", true, vec!["upgrade"]);
-    let rust = Program::new("rust", "rustup", true, vec!["--quiet update"]);
+    let rust = Program::new("rust", "rustup", true, vec!["update"]);
     let haskell = Program::new("haskel", "ghcup", true, vec!["update"]);
     let vim = Program::new("vim", "vim", true, vec!["-c PlugUpdate -c qa"]);
     let nvim = Program::new("nvim", "nvim", true, vec!["-c PlugUpdate -c qa"]);
-    let pip = Program::new(
-        "pip",
-        "py",
-        true,
-        vec!["-m pip install --quiet --upgrade pip"],
-    );
+    let pip = Program::new("pip", "py", true, vec!["-m pip install --upgrade pip"]);
 
     let commands: Vec<Program> = vec![scoop, winget, rust, haskell, vim, nvim, pip];
 
