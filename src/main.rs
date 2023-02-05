@@ -1,3 +1,4 @@
+use chrono::Local;
 use colored::*;
 use flexi_logger::{detailed_format, Duplicate, FileSpec, Logger};
 use indicatif::{HumanDuration, MultiProgress, ProgressBar, ProgressStyle};
@@ -12,19 +13,18 @@ use std::{
     time::{Duration, Instant},
 };
 
-// redish bg, red fg
+// Colors
+// darkpurple bg, red fg
 const F1: u8 = 255;
 const F2: u8 = 46;
 const F3: u8 = 95;
 const B1: u8 = 41;
 const B2: u8 = 0;
 const B3: u8 = 25;
-
 // green
 const F4: u8 = 10;
 const F5: u8 = 255;
 const F6: u8 = 169;
-
 // purple
 const F7: u8 = 127;
 const F8: u8 = 83;
@@ -33,71 +33,102 @@ const F9: u8 = 191;
 struct Program {
     name: String,
     start_extern: bool,
-    output: bool,
+    has_output: bool,
     outputfile: String,
-    collected_cmds: String,
+    update_cmd: Option<String>,
+    info_cmd: Option<String>,
 }
 
 impl Program {
-    pub fn new(
-        name: &str,
+    fn collect_cmds(
         executer: &str,
         start_extern: bool,
-        output: bool,
-        cmds: Vec<&str>,
-    ) -> Program {
-        let tmp_dir = env::temp_dir();
-        let tmp = tmp_dir.to_string_lossy() + "up_output_" + name + ".txt";
-        let outputfile = tmp.to_string();
+        has_output: bool,
+        cmd: Option<&str>,
+        outputfile: &str,
+    ) -> Option<String> {
+        let datetime = Local::now().format("%d%m%Y_%H%M%S_%f").to_string();
+        let mut output = String::new();
+        output.push_str(outputfile);
+        output.push_str("_");
+        output.push_str(datetime.as_str());
+        output.push_str(".txt");
 
         let mut collected_cmds = String::new();
-        match start_extern {
-            true => match output {
+        match cmd {
+            Some(cmd) => match start_extern {
                 true => {
-                    for cmd in cmds {
-                        collected_cmds.push_str("Start-Process ");
-                        collected_cmds.push_str(executer);
-                        collected_cmds.push_str(" -ArgumentList '");
-                        collected_cmds.push_str(cmd);
-                        collected_cmds.push_str("'");
+                    collected_cmds.push_str("Start-Process ");
+                    collected_cmds.push_str(executer);
+                    collected_cmds.push_str(" -ArgumentList '");
+                    collected_cmds.push_str(cmd);
+                    collected_cmds.push_str("'");
+                    if has_output {
                         collected_cmds.push_str("-RedirectStandardOutput ");
-                        collected_cmds.push_str(outputfile.as_str());
-                        collected_cmds.push_str(" -WindowStyle Hidden");
-                        collected_cmds.push_str(" -Wait");
-                        collected_cmds.push_str(";");
+                        collected_cmds.push_str(output.as_str());
                     }
+                    collected_cmds.push_str(" -WindowStyle Hidden");
+                    collected_cmds.push_str(" -Wait");
+                    collected_cmds.push_str(";");
                 }
                 false => {
-                    for cmd in cmds {
-                        collected_cmds.push_str("Start-Process ");
-                        collected_cmds.push_str(executer);
-                        collected_cmds.push_str(" -ArgumentList '");
-                        collected_cmds.push_str(cmd);
-                        collected_cmds.push_str("'");
-                        collected_cmds.push_str(" -WindowStyle Hidden");
-                        collected_cmds.push_str(" -Wait");
-                        collected_cmds.push_str(";");
-                    }
-                }
-            },
-            false => {
-                for cmd in cmds {
                     collected_cmds.push_str(executer);
                     collected_cmds.push_str(" ");
                     collected_cmds.push_str(cmd);
                     collected_cmds.push_str(";");
                 }
-            }
+            },
+            None => return None,
         }
+
+        Some(collected_cmds)
+    }
+
+    pub fn new(
+        name: &str,
+        executer: &str,
+        start_extern: bool,
+        has_output: bool,
+        cmd_for_update: Option<&str>,
+        cmd_for_info: Option<&str>,
+    ) -> Program {
+        // let tmp_dir = env::temp_dir().as_os_str().to_str();
+        // let tmp = tmp_dir + "up_output_" + name + "_" + datetime.as_str() + ".txt";
+        let mut tmp = String::new();
+        match env::temp_dir().as_os_str().to_str() {
+            Some(dir) => {
+                tmp.push_str(dir);
+                tmp.push_str("up_output_");
+                tmp.push_str(name);
+            }
+            None => {}
+        }
+        let outputfile = tmp.to_string();
+
+        let update_cmd = Self::collect_cmds(
+            executer,
+            start_extern,
+            has_output,
+            cmd_for_update,
+            &outputfile,
+        );
+        let info_cmd = Self::collect_cmds(
+            executer,
+            start_extern,
+            has_output,
+            cmd_for_info,
+            &outputfile,
+        );
 
         let name = name.to_string();
 
         Program {
             name,
             start_extern,
-            output,
+            has_output,
             outputfile,
-            collected_cmds,
+            update_cmd,
+            info_cmd,
         }
     }
 }
@@ -119,19 +150,28 @@ fn main() {
         "powershell",
         true,
         true,
-        vec!["-c scoop update --all"],
+        Some("-c scoop update --all"),
+        Some("-c scoop status"),
     );
-    let winget = Program::new("winget", "winget", true, true, vec!["upgrade"]);
-    let rust = Program::new("rust", "rustup", true, true, vec!["update"]);
-    let haskell = Program::new("haskel", "ghcup", true, true, vec!["update"]);
-    let vim = Program::new("vim", "vim", true, false, vec!["-c PlugUpdate -c qa"]);
-    let nvim = Program::new("nvim", "nvim", true, false, vec!["-c PlugUpdate -c qa"]);
+    let winget = Program::new("winget", "winget", true, true, Some("upgrade"), None);
+    let rust = Program::new("rust", "rustup", true, true, Some("update"), None);
+    let haskell = Program::new("haskel", "ghcup", true, true, Some("update"), None);
+    let vim = Program::new("vim", "vim", true, false, Some("-c PlugUpdate -c qa"), None);
+    let nvim = Program::new(
+        "nvim",
+        "nvim",
+        true,
+        false,
+        Some("-c PlugUpdate -c qa"),
+        None,
+    );
     let pip = Program::new(
         "pip",
         "py",
         true,
         true,
-        vec!["-m pip install --upgrade pip"],
+        Some("-m pip install --upgrade pip"),
+        None,
     );
 
     let commands: Vec<Program> = vec![scoop, winget, rust, haskell, vim, nvim, pip];
@@ -200,9 +240,20 @@ fn progress_bar(commands: Vec<Program>, num: u64) -> Result<Arc<MultiProgress>, 
             thread::spawn(move || {
                 spinner.set_message(format!("{} {}", "updating".truecolor(F7, F8, F9), arg.name));
                 spinner.tick();
-                run_cmd(arg.collected_cmds.as_str()).unwrap();
+                match arg.update_cmd {
+                    Some(cmd) => {
+                        run_cmd(cmd.as_str()).unwrap();
+                    }
+                    None => {}
+                }
+                match arg.info_cmd {
+                    Some(cmd) => {
+                        run_cmd(cmd.as_str()).unwrap();
+                    }
+                    None => {}
+                }
                 spinner.finish_with_message(match arg.start_extern {
-                    true => match arg.output {
+                    true => match arg.has_output {
                         true => {
                             format!(
                                 "{} {}  => output at \"{}\"",
