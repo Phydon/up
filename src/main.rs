@@ -92,8 +92,6 @@ impl Program {
         cmd_for_update: Option<&str>,
         cmd_for_info: Option<&str>,
     ) -> Program {
-        // let tmp_dir = env::temp_dir().as_os_str().to_str();
-        // let tmp = tmp_dir + "up_output_" + name + "_" + datetime.as_str() + ".txt";
         let mut tmp = String::new();
         match env::temp_dir().as_os_str().to_str() {
             Some(dir) => {
@@ -101,7 +99,11 @@ impl Program {
                 tmp.push_str("up_output_");
                 tmp.push_str(name);
             }
-            None => {}
+            None => {
+                let err_msg = "Can`t find temp directory";
+                error!("{err_msg}");
+                panic!("{err_msg}");
+            }
         }
         let outputfile = tmp.to_string();
 
@@ -176,12 +178,6 @@ fn main() {
 
     let commands: Vec<Program> = vec![scoop, winget, rust, haskell, vim, nvim, pip];
 
-    // TESTS
-    // let test1 = Program::new("sleep", Start-Sleep", false, vec![" -Seconds(2)"]);
-    // let test2 = Program::new("sleep", Start-Sleep", false, vec![" -Seconds(3)"]);
-    // let test3 = Program::new("sleep", Start-Sleep", false, vec![" -Seconds(4)"]);
-    // let commands: Vec<Program> = vec![test1, test2, test3];
-
     if let Err(err) = update(commands) {
         error!("Error executing cmds: {}", err);
         process::exit(1);
@@ -189,7 +185,6 @@ fn main() {
 }
 
 fn update(commands: Vec<Program>) -> Result<(), Box<dyn Error>> {
-    // println!("{}", "::: STARTING UPDATE".bold().yellow());
     println!("{}", "::: STARTING UPDATE".bold().truecolor(F7, F8, F9));
 
     let num = commands.len() as u64;
