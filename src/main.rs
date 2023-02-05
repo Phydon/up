@@ -1,3 +1,7 @@
+//TODO
+// use clap => with args: run, info, exclude, etc.
+// add info/status/version commands to programs
+// align "output at ..." when outputfile location is printed
 use chrono::Local;
 use colored::*;
 use flexi_logger::{detailed_format, Duplicate, FileSpec, Logger};
@@ -14,7 +18,7 @@ use std::{
 };
 
 // Colors
-// darkpurple bg, red fg
+// darkpurple background, red foreground
 const F1: u8 = 255;
 const F2: u8 = 46;
 const F3: u8 = 95;
@@ -197,10 +201,11 @@ fn run_cmd(cmd: &str) -> Result<(), Box<dyn Error>> {
     if cfg!(target_os = "windows") {
         Command::new("powershell").args(["-c", cmd]).status()?
     } else {
-        Command::new("sh")
-            .arg("-c")
-            .arg("echo 'not implemented yet'")
-            .status()?
+        unimplemented!();
+        // Command::new("sh")
+        //     .arg("-c")
+        //     .arg("echo 'not implemented yet'")
+        //     .status()?
     };
 
     Ok(())
