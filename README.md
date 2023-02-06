@@ -1,5 +1,7 @@
 # up
 
-> update your stuff
+> updates stuff in parallel
+
+**custom command executer**
 
 ## work in progress
