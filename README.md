@@ -1,7 +1,9 @@
 # up
 
-> updates stuff in parallel
+## work in progress
 
 **custom command executer**
 
-## work in progress
+> updates stuff in parallel
+
+![screenshot](https://github.com/Phydon/up/blob/master/assets/screenshot_all_done.png)
