@@ -1,7 +1,11 @@
+// hide console window on Windows in release
+// #![cfg_attr(not(debug_assertions), windows_subsystem = "windows")]
+
 //TODO
 // use clap => with args: run, info, exclude, etc.
 // add info/status/version commands to programs
 // align "output at ..." when outputfile location is printed
+// fix haskel
 use chrono::Local;
 use colored::*;
 use flexi_logger::{detailed_format, Duplicate, FileSpec, Logger};
@@ -161,6 +165,7 @@ fn main() {
     );
     let winget = Program::new("winget", "winget", true, true, Some("upgrade"), None);
     let rust = Program::new("rust", "rustup", true, true, Some("update"), None);
+    // FIXME
     let haskell = Program::new("haskel", "ghcup", true, true, Some("update"), None);
     let vim = Program::new("vim", "vim", true, false, Some("-c PlugUpdate -c qa"), None);
     let nvim = Program::new(
