@@ -6,6 +6,8 @@
 // add info/status/version commands to programs
 // align "output at ..." when outputfile location is printed
 // fix haskel
+// override older tmpfiles to save space on disk
+//     => use different naming style for tmp file
 use chrono::Local;
 use colored::*;
 use flexi_logger::{detailed_format, Duplicate, FileSpec, Logger};
@@ -15,6 +17,7 @@ use log::error;
 use std::{
     env,
     error::Error,
+    fs,
     process::{self, Command},
     sync::Arc,
     thread,
@@ -104,15 +107,17 @@ impl Program {
         match env::temp_dir().as_os_str().to_str() {
             Some(dir) => {
                 tmp.push_str(dir);
-                tmp.push_str("up_output_");
-                tmp.push_str(name);
             }
             None => {
                 let err_msg = "Can`t find temp directory";
                 error!("{err_msg}");
-                panic!("{err_msg}");
+                let dir = "~/up_tmp";
+                fs::create_dir(dir).expect("Unable to find or create tmp dir");
+                tmp.push_str(dir);
             }
         }
+        tmp.push_str("up_output_");
+        tmp.push_str(name);
         let outputfile = tmp.to_string();
 
         let update_cmd = Self::collect_cmds(
