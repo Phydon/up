@@ -103,7 +103,7 @@ fn main() {
         &tmp_dir,
     );
 
-    let commands: Vec<Program> = vec![scoop, winget, rust, haskell, vim, nvim, pip];
+    let commands: Vec<Program> = vec![haskell, nvim, pip, rust, scoop, vim, winget];
 
     // for testing
     // println!("{}", "Testing activated".italic().yellow());
