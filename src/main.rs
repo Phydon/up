@@ -2,8 +2,8 @@
 // #![cfg_attr(not(debug_assertions), windows_subsystem = "windows")]
 
 //TODO
+// align output
 // add /exlude/open_tmp_files/etc commands to programs
-// align "output at ..." when outputfile location is printed
 // check if "ghcup update" works properly
 // let user confirm before cleaning tmp files
 pub mod app;
@@ -15,14 +15,15 @@ use crate::commands::init;
 use crate::dir_work::{check_create_dir, remove_tmps};
 use crate::programs::Program;
 
+use colored::*;
 use flexi_logger::{detailed_format, Duplicate, FileSpec, Logger};
-use log::{error, info};
+use log::error;
 
 use std::process;
 
 fn main() {
     // initialize the logger
-    let _logger = Logger::try_with_str("info") // log info, warn and error
+    let _logger = Logger::try_with_str("warn") // log warn and error
         .unwrap()
         .format_for_files(detailed_format) // use timestamp for every log
         .log_to_file(FileSpec::default().suppress_timestamp()) // no timestamps in the filename
@@ -66,7 +67,7 @@ fn main() {
         &tmp_dir,
     );
     let haskell = Program::new(
-        "haskel",
+        "haskell",
         "ghcup",
         true,
         true,
@@ -105,6 +106,7 @@ fn main() {
     let commands: Vec<Program> = vec![scoop, winget, rust, haskell, vim, nvim, pip];
 
     // for testing
+    // println!("{}", "Testing activated".italic().yellow());
     // let test1 = Program::new(
     //     "test1",
     //     "powershell",
@@ -115,7 +117,7 @@ fn main() {
     //     &tmp_dir,
     // );
     // let test2 = Program::new(
-    //     "test2",
+    //     "testing2",
     //     "powershell",
     //     false,
     //     false,
@@ -127,11 +129,12 @@ fn main() {
 
     // handle Ctrl+C
     ctrlc::set_handler(move || {
-        info!("Received Ctrl-C! => Exit program!");
+        println!("{}", "Received Ctrl-C! => Exit program!".bold().yellow());
         process::exit(0)
     })
     .expect("Error setting Ctrl-C handler");
 
+    // handle input args
     let matches = up().get_matches();
     match matches.subcommand() {
         Some(("run", _)) => {
@@ -144,15 +147,17 @@ fn main() {
             if let Err(err) = remove_tmps(&tmp_dir) {
                 error!("Error while cleaning temporary directory: {}", err);
                 process::exit(1);
+            } else {
+                println!("{}", "All temporary files removed".bold().red());
             }
         }
         Some(("info", _)) => {
-            // TODO add info about one program if program is given after "up info [PROGRAM]"
-            // info(sub_matches.get_one::<String>("PROGRAM").expect("required"));
             if let Err(err) = init(commands, "info") {
                 error!("Error executing cmds: {}", err);
                 process::exit(1);
             }
+            // TODO add info about one program if program is given after "up info [PROGRAM]"
+            // info(sub_matches.get_one::<String>("PROGRAM").expect("required"));
         }
         // Some(("open", sub_matches)) => {
         //     todo!();

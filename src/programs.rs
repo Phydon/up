@@ -1,5 +1,7 @@
 use chrono::Local;
 
+const PLACEHOLDER_THRESHOLD: usize = 8;
+
 pub struct Program {
     pub name: String,
     pub start_extern: bool,
@@ -8,6 +10,7 @@ pub struct Program {
     pub update_cmd: Option<String>,
     pub info_cmd: Option<String>,
     pub msg: Vec<String>,
+    pub placeholder: String,
 }
 
 impl Program {
@@ -40,8 +43,9 @@ impl Program {
             &outputfile,
         );
 
-        let name = name.to_string();
         let msg = Vec::new();
+        let placeholder = Self::get_placeholder(name);
+        let name = name.to_string();
 
         Program {
             name,
@@ -51,6 +55,7 @@ impl Program {
             update_cmd,
             info_cmd,
             msg,
+            placeholder,
         }
     }
 
@@ -96,5 +101,15 @@ impl Program {
         }
 
         Some(collected_cmds)
+    }
+
+    fn get_placeholder(name: &str) -> String {
+        let mut holder = String::new();
+        let rest_length = PLACEHOLDER_THRESHOLD - name.len();
+        for _ in 0..rest_length {
+            holder.push_str(" ");
+        }
+
+        holder
     }
 }

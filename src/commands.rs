@@ -32,11 +32,11 @@ pub fn init(commands: Vec<Program>, mode: &str) -> Result<(), Box<dyn Error>> {
     let num = commands.len() as u64;
     match mode {
         "update" => {
-            println!("{}", "::: STARTING UPDATE".bold().truecolor(F7, F8, F9));
+            println!(":: {}", "STARTING UPDATE".bold().truecolor(F7, F8, F9));
             progress_bar(commands, num, "update")?;
         }
         "info" => {
-            println!("{}", "::: SHOWING INFO".bold().truecolor(F7, F8, F9));
+            println!(":: {}", "GETTING INFORMATION".bold().truecolor(F7, F8, F9));
             progress_bar(commands, num, "info")?;
         }
         _ => {
@@ -67,13 +67,12 @@ fn progress_bar(
     mode: &str,
 ) -> Result<Arc<MultiProgress>, Box<dyn Error>> {
     let started = Instant::now();
-    let spinner_style =
-        ProgressStyle::with_template("{prefix:.bold.dim} {spinner} {wide_msg}").unwrap();
+    let spinner_style = ProgressStyle::with_template("{prefix} {spinner:.red} {wide_msg}").unwrap();
     // .tick_chars("⠁⠂⠄⡀⢀⠠⠐⠈ ");
 
     let m = Arc::new(MultiProgress::new());
     let sty = ProgressStyle::with_template(
-        "{spinner:.blue} [{elapsed_precise}] {bar:40.red/blue} {pos:>5}/{len:5} {eta:5} {msg}",
+        "{spinner:.red} [{elapsed_precise}] {bar:40.red/white} {pos:>5}/{len:5} {eta:5} {msg}",
     )
     .unwrap()
     // .progress_chars("#>-");
@@ -90,37 +89,38 @@ fn progress_bar(
             let spinner = m.add(ProgressBar::new_spinner());
             spinner.enable_steady_tick(Duration::from_millis(200));
             spinner.set_style(spinner_style.clone());
-            spinner.set_prefix(format!("[..]"));
+            spinner.set_prefix(format!(
+                "{} {}{}",
+                "[..]".dimmed(),
+                arg.name.truecolor(F7, F8, F9),
+                arg.placeholder
+            ));
             match mode {
                 "update" => thread::spawn(move || {
-                    spinner.set_message(format!(
-                        "{} {}",
-                        "updating".truecolor(F7, F8, F9),
-                        arg.name
-                    ));
+                    spinner.set_message(format!("{}", "updating".truecolor(F7, F8, F9),));
                     spinner.tick();
                     match arg.update_cmd {
-                        Some(cmd) => {
-                            run_cmd(cmd.as_str()).unwrap();
-                            arg.msg.push("Output at".to_string());
-                            arg.msg.push(arg.outputfile);
-                        }
+                        Some(cmd) => match arg.has_output {
+                            true => {
+                                run_cmd(cmd.as_str()).unwrap();
+                                arg.msg.push("Output at".to_string());
+                                arg.msg.push(arg.outputfile);
+                            }
+                            false => {
+                                run_cmd(cmd.as_str()).unwrap();
+                            }
+                        },
                         None => {
                             arg.msg.push("No update command found".to_string());
                         }
                     }
                     spinner.finish_with_message(match arg.msg.is_empty() {
                         true => {
-                            format!(
-                                "{} \t{}",
-                                arg.name.truecolor(F7, F8, F9),
-                                "done".truecolor(F4, F5, F6)
-                            )
+                            format!("{}", "done".truecolor(F4, F5, F6))
                         }
                         false => {
                             format!(
-                                "{} \t{}  => {}",
-                                arg.name.truecolor(F7, F8, F9),
+                                "{}    \t|  {}",
                                 "done".truecolor(F4, F5, F6),
                                 arg.msg.join(" "),
                             )
@@ -129,11 +129,7 @@ fn progress_bar(
                     pb.inc(1);
                 }),
                 "info" => thread::spawn(move || {
-                    spinner.set_message(format!(
-                        "{} {}",
-                        "getting info for".truecolor(F7, F8, F9),
-                        arg.name
-                    ));
+                    spinner.set_message(format!("{}", "collecting info".truecolor(F7, F8, F9),));
                     spinner.tick();
                     match arg.info_cmd {
                         Some(cmd) => {
@@ -142,21 +138,16 @@ fn progress_bar(
                             arg.msg.push(arg.outputfile);
                         }
                         None => {
-                            arg.msg.push("No status command found".to_string());
+                            arg.msg.push("No information command found".to_string());
                         }
                     }
                     spinner.finish_with_message(match arg.msg.is_empty() {
                         true => {
-                            format!(
-                                "{} \t{}",
-                                arg.name.truecolor(F7, F8, F9),
-                                "done".truecolor(F4, F5, F6)
-                            )
+                            format!("{}", "done".truecolor(F4, F5, F6))
                         }
                         false => {
                             format!(
-                                "{} \t{}  => {}",
-                                arg.name.truecolor(F7, F8, F9),
+                                "{}    \t|  {}",
                                 "done".truecolor(F4, F5, F6),
                                 arg.msg.join(" "),
                             )
@@ -180,8 +171,8 @@ fn progress_bar(
     // m.clear().unwrap();
 
     println!(
-        "{} {}",
-        "::: ALL DONE IN ".bold().truecolor(F4, F5, F6),
+        ":: {} {}",
+        "ALL DONE IN ".bold().truecolor(F4, F5, F6),
         HumanDuration(started.elapsed())
             .to_string()
             .to_uppercase()
