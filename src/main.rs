@@ -19,7 +19,7 @@ use crate::commands::update;
 use crate::programs::Program;
 
 use flexi_logger::{detailed_format, Duplicate, FileSpec, Logger};
-use log::error;
+use log::{error, info};
 
 use std::process;
 
@@ -35,73 +35,92 @@ fn main() {
         .unwrap();
 
     // set up the programs
-    let scoop = Program::new(
-        "scoop",
+    // let scoop = Program::new(
+    //     "scoop",
+    //     "powershell",
+    //     true,
+    //     true,
+    //     Some("-c scoop update --all"),
+    //     Some("-c scoop status"),
+    // );
+    // let winget = Program::new("winget", "winget", true, true, Some("upgrade"), None);
+    // let rust = Program::new("rust", "rustup", true, true, Some("update"), None);
+    // // FIXME or remove
+    // let haskell = Program::new("haskel", "ghcup", true, true, Some("update"), None);
+    // let vim = Program::new("vim", "vim", true, false, Some("-c PlugUpdate -c qa"), None);
+    // let nvim = Program::new(
+    //     "nvim",
+    //     "nvim",
+    //     true,
+    //     false,
+    //     Some("-c PlugUpdate -c qa"),
+    //     None,
+    // );
+    // let pip = Program::new(
+    //     "pip",
+    //     "py",
+    //     true,
+    //     true,
+    //     Some("-m pip install --upgrade pip"),
+    //     None,
+    // );
+
+    // let commands: Vec<Program> = vec![scoop, winget, rust, haskell, vim, nvim, pip];
+
+    // for testing
+    let test1 = Program::new(
+        "test1",
         "powershell",
-        true,
-        true,
-        Some("-c scoop update --all"),
-        Some("-c scoop status"),
-    );
-    let winget = Program::new("winget", "winget", true, true, Some("upgrade"), None);
-    let rust = Program::new("rust", "rustup", true, true, Some("update"), None);
-    // FIXME or remove
-    let haskell = Program::new("haskel", "ghcup", true, true, Some("update"), None);
-    let vim = Program::new("vim", "vim", true, false, Some("-c PlugUpdate -c qa"), None);
-    let nvim = Program::new(
-        "nvim",
-        "nvim",
-        true,
         false,
-        Some("-c PlugUpdate -c qa"),
+        false,
+        Some("-c Start-Sleep -Seconds 3"),
         None,
     );
-    let pip = Program::new(
-        "pip",
-        "py",
-        true,
-        true,
-        Some("-m pip install --upgrade pip"),
+    let test2 = Program::new(
+        "test2",
+        "powershell",
+        false,
+        false,
+        Some("-c Start-Sleep -Seconds 5"),
         None,
     );
-
-    let commands: Vec<Program> = vec![scoop, winget, rust, haskell, vim, nvim, pip];
-
-    if let Err(err) = update(commands) {
-        error!("Error executing cmds: {}", err);
-        process::exit(1);
-    }
+    let commands: Vec<Program> = vec![test1, test2];
 
     // handle Ctrl+C
-    // ctrlc::set_handler(move || {
-    //     println!("Received [ Ctrl-C ]! Quit program!");
-    //     process::exit(0)
-    // })
-    // .expect("Error setting Ctrl-C handler");
+    ctrlc::set_handler(move || {
+        info!("Received [ Ctrl-C ]! Quit program!");
+        process::exit(0)
+    })
+    .expect("Error setting Ctrl-C handler");
 
-    // let matches = up().get_matches();
-    // match matches.subcommand() {
-    //     Some(("run", _)) => {
-    //         todo!();
-    //     }
-    //     Some(("clean", _)) => {
-    //         todo!();
-    //     }
-    //     Some(("open", sub_matches)) => {
-    //         todo!();
-    //     }
-    //     Some(("info", sub_matches)) => {
-    //         info(sub_matches.get_one::<String>("APP").expect("required"));
-    //     }
-    //     Some(("exclude", sub_matches)) => {
-    //         let apps: Vec<_> = sub_matches
-    //             .get_many::<String>("APP")
-    //             .expect("required")
-    //             .map(|s| s.as_str())
-    //             .collect();
-    //         let programs = apps.join(", ");
-    //         exclude(programs);
-    //     }
-    //     _ => unreachable!(),
-    // }
+    let matches = up().get_matches();
+    match matches.subcommand() {
+        Some(("run", _)) => {
+            if let Err(err) = update(commands) {
+                error!("Error executing cmds: {}", err);
+                process::exit(1);
+            }
+        }
+        Some(("clean", _)) => {
+            todo!();
+        }
+        Some(("open", sub_matches)) => {
+            todo!();
+        }
+        Some(("info", sub_matches)) => {
+            todo!();
+            // info(sub_matches.get_one::<String>("APP").expect("required"));
+        }
+        Some(("exclude", sub_matches)) => {
+            todo!();
+            // let apps: Vec<_> = sub_matches
+            //     .get_many::<String>("APP")
+            //     .expect("required")
+            //     .map(|s| s.as_str())
+            //     .collect();
+            // let programs = apps.join(", ");
+            // exclude(programs);
+        }
+        _ => unreachable!(),
+    }
 }
