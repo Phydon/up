@@ -2,17 +2,18 @@
 // #![cfg_attr(not(debug_assertions), windows_subsystem = "windows")]
 
 //TODO
-// use clap => with args: run, info, exclude, etc.
-// add info/status/version commands to programs
+// use clap => with args: run, info, exclude, clear etc.
+// add info/status/version/clear_tmps/exlude/etc commands to programs
 // align "output at ..." when outputfile location is printed
-// fix haskel
+// fix or remove haskel
 // override older tmpfiles to save space on disk
 //     => use different naming style for tmp file
+//     => create up_tmp_dir
 use chrono::Local;
 use colored::*;
 use flexi_logger::{detailed_format, Duplicate, FileSpec, Logger};
 use indicatif::{HumanDuration, MultiProgress, ProgressBar, ProgressStyle};
-use log::error;
+use log::{error, warn};
 
 use std::{
     env,
@@ -110,8 +111,10 @@ impl Program {
             }
             None => {
                 let err_msg = "Can`t find temp directory";
-                error!("{err_msg}");
-                let dir = "~/up_tmp";
+                warn!("{err_msg}");
+                // FIXME panics if dir already exists
+                // TODO check dir.exists()
+                let dir = "~/up_tmp/";
                 fs::create_dir(dir).expect("Unable to find or create tmp dir");
                 tmp.push_str(dir);
             }
@@ -170,7 +173,7 @@ fn main() {
     );
     let winget = Program::new("winget", "winget", true, true, Some("upgrade"), None);
     let rust = Program::new("rust", "rustup", true, true, Some("update"), None);
-    // FIXME
+    // FIXME or remove
     let haskell = Program::new("haskel", "ghcup", true, true, Some("update"), None);
     let vim = Program::new("vim", "vim", true, false, Some("-c PlugUpdate -c qa"), None);
     let nvim = Program::new(
