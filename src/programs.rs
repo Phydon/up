@@ -1,7 +1,4 @@
 use chrono::Local;
-use log::warn;
-
-use std::{env, fs};
 
 pub struct Program {
     pub name: String,
@@ -10,9 +7,53 @@ pub struct Program {
     pub outputfile: String,
     pub update_cmd: Option<String>,
     pub info_cmd: Option<String>,
+    pub msg: Vec<String>,
 }
 
 impl Program {
+    pub fn new(
+        name: &str,
+        executer: &str,
+        start_extern: bool,
+        has_output: bool,
+        cmd_for_update: Option<&str>,
+        cmd_for_info: Option<&str>,
+        tmp_dir: &str,
+    ) -> Program {
+        let mut tmp = tmp_dir.to_string();
+        tmp.push_str("up_output_");
+        tmp.push_str(name);
+        let outputfile = tmp.to_string();
+
+        let update_cmd = Self::collect_cmds(
+            executer,
+            start_extern,
+            has_output,
+            cmd_for_update,
+            &outputfile,
+        );
+        let info_cmd = Self::collect_cmds(
+            executer,
+            start_extern,
+            has_output,
+            cmd_for_info,
+            &outputfile,
+        );
+
+        let name = name.to_string();
+        let msg = Vec::new();
+
+        Program {
+            name,
+            start_extern,
+            has_output,
+            outputfile,
+            update_cmd,
+            info_cmd,
+            msg,
+        }
+    }
+
     fn collect_cmds(
         executer: &str,
         start_extern: bool,
@@ -55,59 +96,5 @@ impl Program {
         }
 
         Some(collected_cmds)
-    }
-
-    pub fn new(
-        name: &str,
-        executer: &str,
-        start_extern: bool,
-        has_output: bool,
-        cmd_for_update: Option<&str>,
-        cmd_for_info: Option<&str>,
-    ) -> Program {
-        let mut tmp = String::new();
-        match env::temp_dir().as_os_str().to_str() {
-            Some(dir) => {
-                tmp.push_str(dir);
-            }
-            None => {
-                let err_msg = "Can`t find temp directory";
-                warn!("{err_msg}");
-                // FIXME panics if dir already exists
-                // TODO check dir.exists()
-                let dir = "~/up_tmp/";
-                fs::create_dir(dir).expect("Unable to find or create tmp dir");
-                tmp.push_str(dir);
-            }
-        }
-        tmp.push_str("up_output_");
-        tmp.push_str(name);
-        let outputfile = tmp.to_string();
-
-        let update_cmd = Self::collect_cmds(
-            executer,
-            start_extern,
-            has_output,
-            cmd_for_update,
-            &outputfile,
-        );
-        let info_cmd = Self::collect_cmds(
-            executer,
-            start_extern,
-            has_output,
-            cmd_for_info,
-            &outputfile,
-        );
-
-        let name = name.to_string();
-
-        Program {
-            name,
-            start_extern,
-            has_output,
-            outputfile,
-            update_cmd,
-            info_cmd,
-        }
     }
 }

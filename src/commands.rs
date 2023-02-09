@@ -28,11 +28,21 @@ const F7: u8 = 127;
 const F8: u8 = 83;
 const F9: u8 = 191;
 
-pub fn update(commands: Vec<Program>) -> Result<(), Box<dyn Error>> {
-    println!("{}", "::: STARTING UPDATE".bold().truecolor(F7, F8, F9));
-
+pub fn init(commands: Vec<Program>, mode: &str) -> Result<(), Box<dyn Error>> {
     let num = commands.len() as u64;
-    progress_bar(commands, num)?;
+    match mode {
+        "update" => {
+            println!("{}", "::: STARTING UPDATE".bold().truecolor(F7, F8, F9));
+            progress_bar(commands, num, "update")?;
+        }
+        "info" => {
+            println!("{}", "::: SHOWING INFO".bold().truecolor(F7, F8, F9));
+            progress_bar(commands, num, "info")?;
+        }
+        _ => {
+            unreachable!();
+        }
+    }
 
     Ok(())
 }
@@ -51,7 +61,11 @@ fn run_cmd(cmd: &str) -> Result<(), Box<dyn Error>> {
     Ok(())
 }
 
-fn progress_bar(commands: Vec<Program>, num: u64) -> Result<Arc<MultiProgress>, Box<dyn Error>> {
+fn progress_bar(
+    commands: Vec<Program>,
+    num: u64,
+    mode: &str,
+) -> Result<Arc<MultiProgress>, Box<dyn Error>> {
     let started = Instant::now();
     let spinner_style =
         ProgressStyle::with_template("{prefix:.bold.dim} {spinner} {wide_msg}").unwrap();
@@ -71,55 +85,89 @@ fn progress_bar(commands: Vec<Program>, num: u64) -> Result<Arc<MultiProgress>, 
     pb.tick();
     let handles: Vec<_> = commands
         .into_iter()
-        .map(|arg| {
+        .map(|mut arg| {
             let pb = pb.clone();
             let spinner = m.add(ProgressBar::new_spinner());
             spinner.enable_steady_tick(Duration::from_millis(200));
             spinner.set_style(spinner_style.clone());
             spinner.set_prefix(format!("[..]"));
-            thread::spawn(move || {
-                spinner.set_message(format!("{} {}", "updating".truecolor(F7, F8, F9), arg.name));
-                spinner.tick();
-                match arg.update_cmd {
-                    Some(cmd) => {
-                        run_cmd(cmd.as_str()).unwrap();
+            match mode {
+                "update" => thread::spawn(move || {
+                    spinner.set_message(format!(
+                        "{} {}",
+                        "updating".truecolor(F7, F8, F9),
+                        arg.name
+                    ));
+                    spinner.tick();
+                    match arg.update_cmd {
+                        Some(cmd) => {
+                            run_cmd(cmd.as_str()).unwrap();
+                            arg.msg.push("Output at".to_string());
+                            arg.msg.push(arg.outputfile);
+                        }
+                        None => {
+                            arg.msg.push("No update command found".to_string());
+                        }
                     }
-                    None => {}
-                }
-                match arg.info_cmd {
-                    Some(cmd) => {
-                        run_cmd(cmd.as_str()).unwrap();
-                    }
-                    None => {}
-                }
-                spinner.finish_with_message(match arg.start_extern {
-                    true => match arg.has_output {
+                    spinner.finish_with_message(match arg.msg.is_empty() {
                         true => {
                             format!(
-                                "{} {}  => output at \"{}\"",
-                                arg.name.truecolor(F7, F8, F9),
-                                "done".truecolor(F4, F5, F6),
-                                arg.outputfile.italic(),
-                            )
-                        }
-                        false => {
-                            format!(
-                                "{} {}",
+                                "{} \t{}",
                                 arg.name.truecolor(F7, F8, F9),
                                 "done".truecolor(F4, F5, F6)
                             )
                         }
-                    },
-                    false => {
-                        format!(
-                            "{} {}",
-                            arg.name.truecolor(F7, F8, F9),
-                            "done".truecolor(F4, F5, F6)
-                        )
+                        false => {
+                            format!(
+                                "{} \t{}  => {}",
+                                arg.name.truecolor(F7, F8, F9),
+                                "done".truecolor(F4, F5, F6),
+                                arg.msg.join(" "),
+                            )
+                        }
+                    });
+                    pb.inc(1);
+                }),
+                "info" => thread::spawn(move || {
+                    spinner.set_message(format!(
+                        "{} {}",
+                        "getting info for".truecolor(F7, F8, F9),
+                        arg.name
+                    ));
+                    spinner.tick();
+                    match arg.info_cmd {
+                        Some(cmd) => {
+                            run_cmd(cmd.as_str()).unwrap();
+                            arg.msg.push("Output at".to_string());
+                            arg.msg.push(arg.outputfile);
+                        }
+                        None => {
+                            arg.msg.push("No status command found".to_string());
+                        }
                     }
-                });
-                pb.inc(1);
-            })
+                    spinner.finish_with_message(match arg.msg.is_empty() {
+                        true => {
+                            format!(
+                                "{} \t{}",
+                                arg.name.truecolor(F7, F8, F9),
+                                "done".truecolor(F4, F5, F6)
+                            )
+                        }
+                        false => {
+                            format!(
+                                "{} \t{}  => {}",
+                                arg.name.truecolor(F7, F8, F9),
+                                "done".truecolor(F4, F5, F6),
+                                arg.msg.join(" "),
+                            )
+                        }
+                    });
+                    pb.inc(1);
+                }),
+                _ => {
+                    unreachable!()
+                }
+            }
         })
         .collect();
 
@@ -133,7 +181,7 @@ fn progress_bar(commands: Vec<Program>, num: u64) -> Result<Arc<MultiProgress>, 
 
     println!(
         "{} {}",
-        "::: ALL UPDATED IN ".bold().truecolor(F4, F5, F6),
+        "::: ALL DONE IN ".bold().truecolor(F4, F5, F6),
         HumanDuration(started.elapsed())
             .to_string()
             .to_uppercase()

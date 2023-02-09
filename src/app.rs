@@ -31,9 +31,8 @@ pub fn up() -> Command {
         .subcommand(
             Command::new("info")
                 .about("print status informations")
-                .short_flag('i')
-                .arg(arg!(<PROGRAM> "The program to get information about"))
-                .arg_required_else_help(true),
+                .short_flag('i'), // .arg(arg!(<PROGRAM> "The program to get information about"))
+                                  // .arg_required_else_help(true),
         )
         .subcommand(
             Command::new("exclude")
