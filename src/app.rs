@@ -6,15 +6,13 @@ pub fn up() -> Command {
         .about("Updates stuff")
         .long_about(
             "Command line tool to handle several programs at the same time.\n
-            \n
             :: Update programs => the output will be stored in a temporary directory.\n
             :: Get status information about the programs.\n
             :: Clean the temporary directory and remove all output files.\n
             \n
             TODO:\n
                 - exclude programs\n
-                - open files with output\n
-        ",
+                - open files with output\n",
         )
         .version("1.0.0")
         .author("Leann Phydon <leann.phydon@gmail.com")
@@ -22,12 +20,7 @@ pub fn up() -> Command {
         .subcommand_required(true)
         .arg_required_else_help(true)
         // .allow_external_subcommands(true)
-        .subcommand(
-            Command::new("run")
-                .short_flag('r')
-                // .long_flag("run")
-                .about("run updates"),
-        )
+        .subcommand(Command::new("run").short_flag('r').about("run updates"))
         .subcommand(
             Command::new("clean")
                 .short_flag('c')
