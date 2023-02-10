@@ -11,8 +11,8 @@ pub fn up() -> Command {
             :: Clean the temporary directory and remove all output files.\n
             \n
             TODO:\n
-                - exclude programs\n
-                - open files with output\n",
+            \t- exclude programs\n
+            \t- open files with output\n",
         )
         .version("1.0.0")
         .author("Leann Phydon <leann.phydon@gmail.com")
