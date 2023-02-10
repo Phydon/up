@@ -5,14 +5,13 @@ pub fn up() -> Command {
     Command::new("up")
         .about("Updates stuff")
         .long_about(
-            "Command line tool to handle several programs at the same time.\n
-            :: Update programs => the output will be stored in a temporary directory.\n
-            :: Get status information about the programs.\n
-            :: Clean the temporary directory and remove all output files.\n
-            \n
-            TODO:\n
-            \t- exclude programs\n
-            \t- open files with output\n",
+            "Command line tool to handle several programs at the same time.\n\
+            \t:: Update programs => the output will be stored in a temporary directory.\n\
+            \t:: Get status information about the programs.\n\
+            \t:: Clean the temporary directory and remove all output files.\n\n\
+            TODO:\n\
+                \t- exclude programs\n\
+                \t- open files with output",
         )
         .version("1.0.0")
         .author("Leann Phydon <leann.phydon@gmail.com")
