@@ -32,11 +32,11 @@ pub fn init(commands: Vec<Program>, mode: &str) -> Result<(), Box<dyn Error>> {
     let num = commands.len() as u64;
     match mode {
         "update" => {
-            println!(":: {}", "STARTING UPDATE".bold().truecolor(F7, F8, F9));
+            println!("{} {}", "↗", "STARTING UPDATE".bold().truecolor(F7, F8, F9));
             progress_bar(commands, num, "update")?;
         }
         "info" => {
-            println!(":: {}", "GETTING INFORMATION".bold().truecolor(F7, F8, F9));
+            println!("{} {}", "🛈", "GETTING INFORMATION".bold().truecolor(F7, F8, F9));
             progress_bar(commands, num, "info")?;
         }
         _ => {
@@ -90,8 +90,8 @@ fn progress_bar(
             spinner.enable_steady_tick(Duration::from_millis(200));
             spinner.set_style(spinner_style.clone());
             spinner.set_prefix(format!(
-                "{} {}{}",
-                "[..]".dimmed(),
+                "[ {} ] {}{}",
+                arg.symbol.dimmed(),
                 arg.name.truecolor(F7, F8, F9),
                 arg.placeholder
             ));
@@ -171,7 +171,8 @@ fn progress_bar(
     // m.clear().unwrap();
 
     println!(
-        ":: {} {}",
+        "{} {} {}",
+        "✔",
         "ALL DONE IN ".bold().truecolor(F4, F5, F6),
         HumanDuration(started.elapsed())
             .to_string()

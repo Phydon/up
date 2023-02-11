@@ -3,7 +3,7 @@ use clap::{arg, Command};
 // TODO how to run only by typing in the name of the program ("uptest")
 pub fn up() -> Command {
     Command::new("up")
-        .about("Updates stuff")
+        .about("Update programs or get status informations.")
         .long_about(
             "Command line tool to handle several programs at the same time.\n\
             \t:: Update programs => the output will be stored in a temporary directory.\n\

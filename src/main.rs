@@ -41,6 +41,7 @@ fn main() {
     // set up the programs
     let scoop = Program::new(
         "scoop",
+        None,
         "powershell",
         true,
         true,
@@ -50,6 +51,7 @@ fn main() {
     );
     let winget = Program::new(
         "winget",
+        None,
         "winget",
         true,
         true,
@@ -59,6 +61,7 @@ fn main() {
     );
     let rust = Program::new(
         "rust",
+        Some(""),
         "rustup",
         true,
         true,
@@ -68,6 +71,7 @@ fn main() {
     );
     let haskell = Program::new(
         "haskell",
+        Some(""),
         "ghcup",
         true,
         true,
@@ -77,6 +81,7 @@ fn main() {
     );
     let vim = Program::new(
         "vim",
+        None,
         "vim",
         true,
         false,
@@ -85,7 +90,8 @@ fn main() {
         &tmp_dir,
     );
     let nvim = Program::new(
-        "nvim",
+        "neovim",
+        None,
         "nvim",
         true,
         false,
@@ -95,6 +101,7 @@ fn main() {
     );
     let pip = Program::new(
         "pip",
+        Some(""),
         "py",
         true,
         true,
@@ -129,7 +136,11 @@ fn main() {
 
     // handle Ctrl+C
     ctrlc::set_handler(move || {
-        println!("{}", "Received Ctrl-C! => Exit program!".bold().yellow());
+        println!(
+            "{} {}",
+            "🤬",
+           "Received Ctrl-C! => Exit program!".bold().yellow())
+        ;
         process::exit(0)
     })
     .expect("Error setting Ctrl-C handler");
@@ -148,7 +159,7 @@ fn main() {
                 error!("Error while cleaning temporary directory: {}", err);
                 process::exit(1);
             } else {
-                println!("{}", "All temporary files removed".bold().red());
+                println!("{} {}", "🗑️", "All temporary files removed".bold().red());
             }
         }
         Some(("info", _)) => {

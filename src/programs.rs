@@ -4,6 +4,7 @@ const PLACEHOLDER_THRESHOLD: usize = 8;
 
 pub struct Program {
     pub name: String,
+    pub symbol: String,
     pub start_extern: bool,
     pub has_output: bool,
     pub outputfile: String,
@@ -16,6 +17,7 @@ pub struct Program {
 impl Program {
     pub fn new(
         name: &str,
+        symbol: Option<&str>,
         executer: &str,
         start_extern: bool,
         has_output: bool,
@@ -45,10 +47,30 @@ impl Program {
 
         let msg = Vec::new();
         let placeholder = Self::get_placeholder(name);
+
+        let mut symbol_str = String::new();
+        match symbol {
+            Some(sym) => {
+                symbol_str.push_str(sym);
+            }
+            None => {
+                symbol_str.push_str(
+                    name.chars()
+                        .nth(0)
+                        .expect("Unable to extract the first char from progam name")
+                        .to_ascii_uppercase()
+                        .to_string()
+                        .as_str(),
+                );
+            }
+        }
+        let symbol = symbol_str;
+
         let name = name.to_string();
 
         Program {
             name,
+            symbol,
             start_extern,
             has_output,
             outputfile,
