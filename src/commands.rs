@@ -1,6 +1,7 @@
 use crate::programs::Program;
 
 use colored::*;
+use dialoguer::{theme::ColorfulTheme, FuzzySelect};
 use indicatif::{HumanDuration, MultiProgress, ProgressBar, ProgressStyle};
 
 use std::{
@@ -36,7 +37,11 @@ pub fn init(commands: Vec<Program>, mode: &str) -> Result<(), Box<dyn Error>> {
             progress_bar(commands, num, "update")?;
         }
         "info" => {
-            println!("{} {}", "🛈", "GETTING INFORMATION".bold().truecolor(F7, F8, F9));
+            println!(
+                "{} {}",
+                "🛈",
+                "GETTING INFORMATION".bold().truecolor(F7, F8, F9)
+            );
             progress_bar(commands, num, "info")?;
         }
         _ => {
@@ -183,4 +188,24 @@ fn progress_bar(
     );
 
     Ok(m)
+}
+
+// FIXME
+pub fn exclude(mut commands: Vec<Program>) -> Vec<Program> {
+    let selection = FuzzySelect::with_theme(&ColorfulTheme::default())
+        .with_prompt("Choose programs to exclude")
+        .default(0)
+        .items(&commands[..])
+        .interact()
+        .unwrap();
+
+    commands.retain(|s| {
+        if *s.name == commands[selection].name {
+            false
+        } else {
+            true
+        }
+    });
+
+    commands
 }

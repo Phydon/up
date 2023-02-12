@@ -1,4 +1,5 @@
 use chrono::Local;
+use std::fmt;
 
 const PLACEHOLDER_THRESHOLD: usize = 8;
 
@@ -12,6 +13,12 @@ pub struct Program {
     pub info_cmd: Option<String>,
     pub msg: Vec<String>,
     pub placeholder: String,
+}
+
+impl fmt::Display for Program {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        write!(f, "{}", self)
+    }
 }
 
 impl Program {

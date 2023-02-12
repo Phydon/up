@@ -11,7 +11,7 @@ pub mod commands;
 pub mod dir_work;
 pub mod programs;
 use crate::app::up;
-use crate::commands::init;
+use crate::commands::{exclude, init};
 use crate::dir_work::{check_create_dir, remove_tmps};
 use crate::programs::Program;
 
@@ -110,7 +110,7 @@ fn main() {
         &tmp_dir,
     );
 
-    let commands: Vec<Program> = vec![haskell, nvim, pip, rust, scoop, vim, winget];
+    let mut commands: Vec<Program> = vec![haskell, nvim, pip, rust, scoop, vim, winget];
 
     // for testing
     // println!("{}", "Testing activated".italic().yellow());
@@ -139,8 +139,8 @@ fn main() {
         println!(
             "{} {}",
             "🤬",
-           "Received Ctrl-C! => Exit program!".bold().yellow())
-        ;
+            "Received Ctrl-C! => Exit program!".bold().yellow()
+        );
         process::exit(0)
     })
     .expect("Error setting Ctrl-C handler");
@@ -173,16 +173,19 @@ fn main() {
         // Some(("open", sub_matches)) => {
         //     todo!();
         // }
-        // Some(("exclude", sub_matches)) => {
-        //     todo!();
-        // let apps: Vec<_> = sub_matches
-        //     .get_many::<String>("PROGRAM")
-        //     .expect("required")
-        //     .map(|s| s.as_str())
-        //     .collect();
-        // let programs = apps.join(", ");
-        // exclude(programs);
-        // }
+        Some(("exclude", _)) => {
+            // let apps: Vec<_> = sub_matches
+            //     .get_many::<String>("PROGRAM")
+            //     .expect("required")
+            //     .map(|s| s.as_str())
+            //     .collect();
+            // let programs = apps.join(", ");
+            let included_commands = exclude(commands);
+            if let Err(err) = init(included_commands, "update") {
+                error!("Error executing cmds: {}", err);
+                process::exit(1);
+            }
+        }
         _ => unreachable!(),
     }
 }
