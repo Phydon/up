@@ -11,7 +11,7 @@ pub mod commands;
 pub mod dir_work;
 pub mod programs;
 use crate::app::up;
-use crate::commands::init;
+use crate::commands::{get_sys, init};
 use crate::dir_work::{check_create_dir, remove_tmps, show_log_file};
 use crate::programs::Program;
 
@@ -177,6 +177,9 @@ fn main() {
                 error!("Unable to read logs");
                 process::exit(1);
             }
+        }
+        Some(("sys", _)) => {
+            get_sys();
         }
         // Some(("open", sub_matches)) => {
         //     todo!();

@@ -1,12 +1,13 @@
 use crate::programs::Program;
 
 use colored::*;
-use dialoguer::{theme::ColorfulTheme, MultiSelect};
+// use dialoguer::{theme::ColorfulTheme, MultiSelect};
 use indicatif::{HumanDuration, MultiProgress, ProgressBar, ProgressStyle};
+use sysinfo::{CpuRefreshKind, RefreshKind, System, SystemExt};
 
 use std::{
     error::Error,
-    io,
+    // io,
     process::Command,
     sync::Arc,
     thread,
@@ -189,6 +190,46 @@ fn progress_bar(
     );
 
     Ok(m)
+}
+
+pub fn get_sys() {
+    let mut sys = System::new_all();
+
+    // First we update all information of our `System` struct.
+    sys.refresh_specifics(
+        RefreshKind::new()
+            .with_cpu(CpuRefreshKind::everything())
+            .with_users_list(),
+    );
+
+    // Display system information:
+    println!(
+        "{}:             {}",
+        "System name".truecolor(F7, F8, F9),
+        sys.name().unwrap().truecolor(F4, F5, F6).bold()
+    );
+    println!(
+        "{}:   {}",
+        "System kernel version".truecolor(F7, F8, F9),
+        sys.kernel_version().unwrap().truecolor(F4, F5, F6).bold()
+    );
+    println!(
+        "{}       {}",
+        "System OS version:".truecolor(F7, F8, F9),
+        sys.os_version().unwrap().truecolor(F4, F5, F6).bold()
+    );
+    println!(
+        "{}        {}",
+        "System host name:".truecolor(F7, F8, F9),
+        sys.host_name().unwrap().truecolor(F4, F5, F6).bold()
+    );
+
+    // Number of CPUs:
+    println!(
+        "{}          {}",
+        "Number of CPUs:".truecolor(F7, F8, F9),
+        sys.cpus().len().to_string().truecolor(F4, F5, F6).bold()
+    );
 }
 
 // FIXME

@@ -31,6 +31,11 @@ pub fn up() -> Command {
                 .about("show the log file"),
         )
         .subcommand(
+            Command::new("sys")
+                .short_flag('s')
+                .about("show system information"),
+        )
+        .subcommand(
             Command::new("open")
                 .short_flag('o')
                 .about("open the specified output files")
