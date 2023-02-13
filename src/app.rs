@@ -26,6 +26,11 @@ pub fn up() -> Command {
                 .about("remove all temporary files"),
         )
         .subcommand(
+            Command::new("log")
+                .short_flag('l')
+                .about("show the log file"),
+        )
+        .subcommand(
             Command::new("open")
                 .short_flag('o')
                 .about("open the specified output files")
@@ -41,8 +46,7 @@ pub fn up() -> Command {
         .subcommand(
             Command::new("exclude")
                 .about("exclude programs from update")
-                .short_flag('e')
-                .arg(arg!(<PROGRAM> "The programs to exclude from updates").num_args(1..))
-                .arg_required_else_help(true),
+                .short_flag('e'), // .arg(arg!(<PROGRAM> "The programs to exclude from updates").num_args(1..))
+                                  // .arg_required_else_help(true),
         )
 }

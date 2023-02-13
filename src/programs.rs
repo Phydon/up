@@ -3,6 +3,7 @@ use std::fmt;
 
 const PLACEHOLDER_THRESHOLD: usize = 8;
 
+#[derive(Clone)]
 pub struct Program {
     pub name: String,
     pub symbol: String,

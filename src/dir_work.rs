@@ -1,18 +1,4 @@
-use std::{env, fs, io};
-
-// fn main() {
-//     TODO for cleaning command:
-//     if let Ok(tmp_dir_work) = check_create_dir() {
-//         if let Err(err) = remove_tmps(&tmp_dir_work) {
-//             error!("Unable to remove tmp files: {err}");
-//         }
-//     }
-
-//     TODO for cleaning command:
-//     if let Ok(tmp_file) = open_tmp(tmp_path) {
-//         println!("{tmp_file:?}");
-//     }
-// }
+use std::{env, fs, io, path::Path};
 
 pub fn check_create_dir() -> io::Result<String> {
     let mut tmp_path = env::temp_dir();
@@ -43,6 +29,15 @@ pub fn remove_tmps(tmp_dir_path: &str) -> io::Result<()> {
     }
 
     Ok(())
+}
+
+pub fn show_log_file() -> io::Result<String> {
+    match Path::new("up.log").try_exists()? {
+        true => {
+            return Ok(fs::read_to_string("up.log")?);
+        }
+        false => return Ok("No log file found".to_string()),
+    }
 }
 
 // fn open_tmp(tmp_filepath: &str) -> io::Result<()> {

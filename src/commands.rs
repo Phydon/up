@@ -1,11 +1,12 @@
 use crate::programs::Program;
 
 use colored::*;
-use dialoguer::{theme::ColorfulTheme, FuzzySelect};
+use dialoguer::{theme::ColorfulTheme, MultiSelect};
 use indicatif::{HumanDuration, MultiProgress, ProgressBar, ProgressStyle};
 
 use std::{
     error::Error,
+    io,
     process::Command,
     sync::Arc,
     thread,
@@ -191,21 +192,29 @@ fn progress_bar(
 }
 
 // FIXME
-pub fn exclude(mut commands: Vec<Program>) -> Vec<Program> {
-    let selection = FuzzySelect::with_theme(&ColorfulTheme::default())
-        .with_prompt("Choose programs to exclude")
-        .default(0)
-        .items(&commands[..])
-        .interact()
-        .unwrap();
+// pub fn exclude(programs: &Vec<Program>) -> io::Result<Vec<Program>> {
+//     let mut names = Vec::new();
+//     for program in programs {
+//         names.push(program.name.clone());
+//     }
 
-    commands.retain(|s| {
-        if *s.name == commands[selection].name {
-            false
-        } else {
-            true
-        }
-    });
+//     let arr: [String; 7] = names.try_into().unwrap();
+//     let selections = MultiSelect::with_theme(&ColorfulTheme::default())
+//         .with_prompt("Choose programs to exclude")
+//         .items(&arr[..])
+//         .interact()?;
 
-    commands
-}
+//     let mut filtered = Vec::new();
+//     // programs
+//     //     .into_iter()
+//     //     .filter(|p| !selections.contains(p.name as &usize));
+//     // for program in programs {
+//     //     if program.name == selections[selection] {
+//     //         continue;
+//     //     } else {
+//     //         filtered.push(program.clone());
+//     //     }
+//     // }
+
+//     Ok(filtered)
+// }

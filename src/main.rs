@@ -11,8 +11,8 @@ pub mod commands;
 pub mod dir_work;
 pub mod programs;
 use crate::app::up;
-use crate::commands::{exclude, init};
-use crate::dir_work::{check_create_dir, remove_tmps};
+use crate::commands::init;
+use crate::dir_work::{check_create_dir, remove_tmps, show_log_file};
 use crate::programs::Program;
 
 use colored::*;
@@ -110,7 +110,7 @@ fn main() {
         &tmp_dir,
     );
 
-    let mut commands: Vec<Program> = vec![haskell, nvim, pip, rust, scoop, vim, winget];
+    let programs: Vec<Program> = vec![haskell, nvim, pip, rust, scoop, vim, winget];
 
     // for testing
     // println!("{}", "Testing activated".italic().yellow());
@@ -149,7 +149,7 @@ fn main() {
     let matches = up().get_matches();
     match matches.subcommand() {
         Some(("run", _)) => {
-            if let Err(err) = init(commands, "update") {
+            if let Err(err) = init(programs, "update") {
                 error!("Error executing cmds: {}", err);
                 process::exit(1);
             }
@@ -163,29 +163,42 @@ fn main() {
             }
         }
         Some(("info", _)) => {
-            if let Err(err) = init(commands, "info") {
+            if let Err(err) = init(programs, "info") {
                 error!("Error executing cmds: {}", err);
                 process::exit(1);
             }
             // TODO add info about one program if program is given after "up info [PROGRAM]"
             // info(sub_matches.get_one::<String>("PROGRAM").expect("required"));
         }
-        // Some(("open", sub_matches)) => {
-        //     todo!();
-        // }
-        Some(("exclude", _)) => {
-            // let apps: Vec<_> = sub_matches
-            //     .get_many::<String>("PROGRAM")
-            //     .expect("required")
-            //     .map(|s| s.as_str())
-            //     .collect();
-            // let programs = apps.join(", ");
-            let included_commands = exclude(commands);
-            if let Err(err) = init(included_commands, "update") {
-                error!("Error executing cmds: {}", err);
+        Some(("log", _)) => {
+            if let Ok(logs) = show_log_file() {
+                println!("{}", logs);
+            } else {
+                error!("Unable to read logs");
                 process::exit(1);
             }
         }
+        // Some(("open", sub_matches)) => {
+        //     todo!();
+        // }
+        // Some(("exclude", _)) => {
+        // let apps: Vec<_> = sub_matches
+        //     .get_many::<String>("PROGRAM")
+        //     .expect("required")
+        //     .map(|s| s.as_str())
+        //     .collect();
+        // let programs = apps.join(", ");
+
+        // let filtered = exclude(&programs).expect("Error trying to exclude programs");
+        // for program in filtered {
+        //     println!("{}", program);
+        // }
+
+        // if let Err(err) = init(filtered, "update") {
+        //     error!("Error executing cmds: {}", err);
+        //     process::exit(1);
+        // }
+        // }
         _ => unreachable!(),
     }
 }
