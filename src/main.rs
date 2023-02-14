@@ -4,13 +4,12 @@
 //TODO
 // add /exlude/open_tmp_files/etc commands to programs
 // check if "ghcup update" works properly
-// let user confirm before cleaning tmp files
 pub mod app;
 pub mod commands;
 pub mod dir_work;
 pub mod programs;
 use crate::app::up;
-use crate::commands::{get_sys, init};
+use crate::commands::{confirm, get_sys, init};
 use crate::dir_work::{check_create_dir, remove_tmps, show_log_file};
 use crate::programs::Program;
 
@@ -156,11 +155,15 @@ fn main() {
             }
         }
         Some(("clean", _)) => {
-            if let Err(err) = remove_tmps(&tmp_dir) {
-                error!("Error while cleaning temporary directory: {}", err);
-                process::exit(1);
+            if confirm("Do you really want to delete all temporary files? (y/n)") {
+                if let Err(err) = remove_tmps(&tmp_dir) {
+                    error!("Error while cleaning temporary directory: {}", err);
+                    process::exit(1);
+                } else {
+                    println!("{} {}", "🗑️", "All temporary files removed".bold().red());
+                }
             } else {
-                println!("{} {}", "🗑️", "All temporary files removed".bold().red());
+                println!("Nevermind then.");
             }
         }
         Some(("info", _)) => {

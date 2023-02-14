@@ -1,13 +1,12 @@
 use crate::programs::Program;
 
 use colored::*;
-// use dialoguer::{theme::ColorfulTheme, MultiSelect};
 use indicatif::{HumanDuration, MultiProgress, ProgressBar, ProgressStyle};
 use sysinfo::{CpuRefreshKind, RefreshKind, System, SystemExt};
 
 use std::{
     error::Error,
-    // io,
+    io,
     process::Command,
     sync::Arc,
     thread,
@@ -232,30 +231,31 @@ pub fn get_sys() {
     );
 }
 
+pub fn confirm(msg: &str) -> bool {
+    loop {
+        println!("{}", msg.truecolor(F7, F8, F9));
+
+        let mut input = String::new();
+        io::stdin()
+            .read_line(&mut input)
+            .expect("Failed to read input");
+
+        match input.trim().to_lowercase().as_str() {
+            "yes" | "y" => {
+                println!("{}", "yes".truecolor(F4, F5, F6).bold());
+                return true;
+            }
+            "no" | "n" => {
+                println!("{}", "no".red().bold());
+                return false;
+            }
+            _ => {}
+        }
+    }
+}
+
 // FIXME
 // pub fn exclude(programs: &Vec<Program>) -> io::Result<Vec<Program>> {
-//     let mut names = Vec::new();
-//     for program in programs {
-//         names.push(program.name.clone());
-//     }
-
-//     let arr: [String; 7] = names.try_into().unwrap();
-//     let selections = MultiSelect::with_theme(&ColorfulTheme::default())
-//         .with_prompt("Choose programs to exclude")
-//         .items(&arr[..])
-//         .interact()?;
-
 //     let mut filtered = Vec::new();
-//     // programs
-//     //     .into_iter()
-//     //     .filter(|p| !selections.contains(p.name as &usize));
-//     // for program in programs {
-//     //     if program.name == selections[selection] {
-//     //         continue;
-//     //     } else {
-//     //         filtered.push(program.clone());
-//     //     }
-//     // }
-
 //     Ok(filtered)
 // }

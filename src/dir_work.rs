@@ -1,3 +1,5 @@
+use colored::*;
+
 use std::{env, fs, io, path::Path};
 
 pub fn check_create_dir() -> io::Result<String> {
@@ -20,8 +22,8 @@ pub fn remove_tmps(tmp_dir_path: &str) -> io::Result<()> {
             Some(file) => {
                 let content = file.to_string_lossy();
                 if content.contains(&"up_output_".to_string()) {
-                    // TODO let user confirm before removing the files
                     fs::remove_file(entry.path())?;
+                    println!("{} {:?}", "Removed:".red(), content);
                 }
             }
             None => {}
