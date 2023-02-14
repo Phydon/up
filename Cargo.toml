@@ -13,5 +13,4 @@ indicatif = "0.17.2"
 chrono = "0.4.23"
 ctrlc = "3.2.5"
 clap = "4.1.4"
-dialoguer = { version = "0.10.3", features = ["fuzzy-select"] }
 sysinfo = "0.27.7"
