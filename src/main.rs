@@ -163,7 +163,7 @@ fn main() {
                     println!("{} {}", "🗑️", "All temporary files removed".bold().red());
                 }
             } else {
-                println!("Nevermind then.");
+                println!("Nevermind then");
             }
         }
         Some(("info", _)) => {
