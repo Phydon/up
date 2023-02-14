@@ -1,6 +1,6 @@
 use clap::{arg, Command};
 
-// TODO how to run only by typing in the name of the program ("uptest")
+// TODO how to run only by typing in the name of the program (-> "up")
 pub fn up() -> Command {
     Command::new("up")
         .about("Update programs or get status informations.")
@@ -28,7 +28,7 @@ pub fn up() -> Command {
         .subcommand(
             Command::new("log")
                 .short_flag('l')
-                .about("show the log file"),
+                .about("show content of the log file"),
         )
         .subcommand(
             Command::new("sys")
@@ -44,14 +44,16 @@ pub fn up() -> Command {
         )
         .subcommand(
             Command::new("info")
-                .about("print status informations")
-                .short_flag('i'), // .arg(arg!(<PROGRAM> "The program to get information about"))
-                                  // .arg_required_else_help(true),
+                .about("get status information (saved in output files)")
+                .short_flag('i'),
+            // .arg(arg!(<PROGRAM> "The program to get information about"))
+            // .arg_required_else_help(true),
         )
         .subcommand(
             Command::new("exclude")
                 .about("exclude programs from update")
-                .short_flag('e'), // .arg(arg!(<PROGRAM> "The programs to exclude from updates").num_args(1..))
-                                  // .arg_required_else_help(true),
+                .short_flag('e'),
+            // .arg(arg!(<PROGRAM> "The programs to exclude from updates").num_args(1..))
+            // .arg_required_else_help(true),
         )
 }

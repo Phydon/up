@@ -40,6 +40,6 @@ pub fn show_log_file() -> io::Result<String> {
     }
 }
 
-// fn open_tmp(tmp_filepath: &str) -> io::Result<()> {
+// fn open_tmp(tmp_filepath: &str) -> io::Result<String> {
 //     todo!();
 // }

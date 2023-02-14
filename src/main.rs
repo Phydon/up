@@ -2,7 +2,6 @@
 // #![cfg_attr(not(debug_assertions), windows_subsystem = "windows")]
 
 //TODO
-// align output
 // add /exlude/open_tmp_files/etc commands to programs
 // check if "ghcup update" works properly
 // let user confirm before cleaning tmp files
@@ -116,6 +115,7 @@ fn main() {
     // println!("{}", "Testing activated".italic().yellow());
     // let test1 = Program::new(
     //     "test1",
+    //     None,
     //     "powershell",
     //     true,
     //     true,
@@ -125,6 +125,7 @@ fn main() {
     // );
     // let test2 = Program::new(
     //     "testing2",
+    //     None,
     //     "powershell",
     //     false,
     //     false,
@@ -145,7 +146,7 @@ fn main() {
     })
     .expect("Error setting Ctrl-C handler");
 
-    // handle input args
+    // handle arguments
     let matches = up().get_matches();
     match matches.subcommand() {
         Some(("run", _)) => {
@@ -184,6 +185,7 @@ fn main() {
         // Some(("open", sub_matches)) => {
         //     todo!();
         // }
+        // FIXME
         // Some(("exclude", _)) => {
         // let apps: Vec<_> = sub_matches
         //     .get_many::<String>("PROGRAM")
