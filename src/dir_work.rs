@@ -20,10 +20,10 @@ pub fn remove_tmps(tmp_dir_path: &str) -> io::Result<()> {
         let entry = entry?;
         match entry.path().file_name() {
             Some(file) => {
-                let content = file.to_string_lossy();
-                if content.contains(&"up_output_".to_string()) {
+                let filename = file.to_string_lossy();
+                if filename.contains(&"up_output_".to_string()) {
                     fs::remove_file(entry.path())?;
-                    println!("{} {:?}", "Removed:".red(), content);
+                    println!("{} {:?}", "Removed:".red(), filename);
                 }
             }
             None => {}
@@ -38,10 +38,27 @@ pub fn show_log_file() -> io::Result<String> {
         true => {
             return Ok(fs::read_to_string("up.log")?);
         }
-        false => return Ok("No log file found".to_string()),
+        false => return Ok("No log file found".red().bold().to_string()),
     }
 }
 
-// fn open_tmp(tmp_filepath: &str) -> io::Result<String> {
-//     todo!();
-// }
+pub fn open_tmp(program_name: &str) -> io::Result<()> {
+    let mut tmp_path = env::temp_dir();
+    tmp_path.push("up_tmp\\");
+    for entry in fs::read_dir(tmp_path)? {
+        let entry = entry?;
+        match entry.path().file_name() {
+            Some(file) => {
+                let filename = file.to_string_lossy();
+                if filename.contains(&program_name.to_string()) {
+                    let content = fs::read_to_string(entry.path())?;
+                    println!("{}:", filename.bold().yellow());
+                    println!("{content}");
+                }
+            }
+            None => {}
+        }
+    }
+
+    Ok(())
+}

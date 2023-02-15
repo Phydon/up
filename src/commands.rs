@@ -241,14 +241,8 @@ pub fn confirm(msg: &str) -> bool {
             .expect("Failed to read input");
 
         match input.trim().to_lowercase().as_str() {
-            "yes" | "y" => {
-                println!("{}", "yes".truecolor(F4, F5, F6).bold());
-                return true;
-            }
-            "no" | "n" => {
-                println!("{}", "no".red().bold());
-                return false;
-            }
+            "yes" | "y" => return true,
+            "no" | "n" => return false,
             _ => {}
         }
     }

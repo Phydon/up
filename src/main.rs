@@ -10,7 +10,7 @@ pub mod dir_work;
 pub mod programs;
 use crate::app::up;
 use crate::commands::{confirm, get_sys, init};
-use crate::dir_work::{check_create_dir, remove_tmps, show_log_file};
+use crate::dir_work::{check_create_dir, open_tmp, remove_tmps, show_log_file};
 use crate::programs::Program;
 
 use colored::*;
@@ -185,9 +185,16 @@ fn main() {
         Some(("sys", _)) => {
             get_sys();
         }
-        // Some(("open", sub_matches)) => {
-        //     todo!();
-        // }
+        Some(("open", sub_match)) => {
+            let program_name = sub_match
+                .get_one::<String>("PROGRAM")
+                .map(|s| s.as_str())
+                .expect("required");
+            if let Err(err) = open_tmp(program_name) {
+                error!("Unable to open output files: {}", err);
+                process::exit(1);
+            }
+        }
         // FIXME
         // Some(("exclude", _)) => {
         // let apps: Vec<_> = sub_matches

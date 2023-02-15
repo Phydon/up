@@ -38,8 +38,8 @@ pub fn up() -> Command {
         .subcommand(
             Command::new("open")
                 .short_flag('o')
-                .about("open the specified output files")
-                .arg(arg!(<PROGRAM> "Open the output file of the specified program"))
+                .about("open the output files for the specified program ")
+                .arg(arg!(<PROGRAM> "the program for which the output should be displayed"))
                 .arg_required_else_help(true),
         )
         .subcommand(
