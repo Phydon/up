@@ -19,46 +19,46 @@ pub fn up() -> Command {
         .subcommand_required(true)
         .arg_required_else_help(true)
         // .allow_external_subcommands(true)
-        .subcommand(Command::new("run").short_flag('r').about("run updates"))
         .subcommand(
             Command::new("clean")
                 .short_flag('c')
-                .about("remove all temporary files"),
-        )
-        .subcommand(
-            Command::new("log")
-                .short_flag('L')
-                .about("show content of the log file"),
-        )
-        .subcommand(
-            Command::new("sys")
-                .short_flag('s')
-                .about("show system information"),
-        )
-        .subcommand(
-            Command::new("open")
-                .short_flag('o')
-                .about("open the output files for the specified program ")
-                .arg(arg!(<PROGRAM> "the program for which the output should be displayed"))
-                .arg_required_else_help(true),
-        )
-        .subcommand(
-            Command::new("info")
-                .about("get status information (saved in output files)")
-                .short_flag('i'),
-            // .arg(arg!(<PROGRAM> "The program to get information about"))
-            // .arg_required_else_help(true),
+                .about("Remove all temporary files"),
         )
         .subcommand(
             Command::new("exclude")
-                .about("exclude programs from update")
+                .about("Exclude programs from update")
                 .short_flag('e'),
             // .arg(arg!(<PROGRAM> "The programs to exclude from updates").num_args(1..))
             // .arg_required_else_help(true),
         )
         .subcommand(
+            Command::new("info")
+                .about("Get status information (saved in output files)")
+                .short_flag('i'),
+            // .arg(arg!(<PROGRAM> "The program to get information about"))
+            // .arg_required_else_help(true),
+        )
+        .subcommand(
             Command::new("list")
                 .short_flag('l')
-                .about("list all available programs"),
+                .about("List all available programs"),
+        )
+        .subcommand(
+            Command::new("log")
+                .short_flag('L')
+                .about("Show content of the log file"),
+        )
+        .subcommand(
+            Command::new("open")
+                .short_flag('o')
+                .about("Open the output files for the specified program ")
+                .arg(arg!(<PROGRAM> "the program for which the output should be displayed"))
+                .arg_required_else_help(true),
+        )
+        .subcommand(Command::new("run").short_flag('r').about("Run updates"))
+        .subcommand(
+            Command::new("sys")
+                .short_flag('s')
+                .about("Show system information"),
         )
 }
