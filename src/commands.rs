@@ -249,7 +249,7 @@ pub fn confirm(msg: &str) -> bool {
 }
 
 pub fn list_programs(programs: &Vec<Program>) {
-    println!("{}", "Available programs:".yellow());
+    println!("{}", "Available programs:".bold().yellow());
     for program in programs {
         println!(
             "[ {} ] {}",

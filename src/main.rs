@@ -176,6 +176,7 @@ fn main() {
         }
         Some(("log", _)) => {
             if let Ok(logs) = show_log_file() {
+                println!("{}", "Available logs:".bold().yellow());
                 println!("{}", logs);
             } else {
                 error!("Unable to read logs");
@@ -186,16 +187,15 @@ fn main() {
             get_sys();
         }
         Some(("open", sub_match)) => {
-            let program_name = sub_match
+            let arg = sub_match
                 .get_one::<String>("PROGRAM")
                 .map(|s| s.as_str())
                 .expect("required");
-            if let Err(err) = open_tmp(program_name) {
+            if let Err(err) = open_tmp(arg) {
                 error!("Unable to open output files: {}", err);
                 process::exit(1);
             }
         }
-        // TODO
         Some(("list", _)) => {
             list_programs(&programs);
         }

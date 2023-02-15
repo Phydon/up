@@ -42,7 +42,7 @@ pub fn show_log_file() -> io::Result<String> {
     }
 }
 
-pub fn open_tmp(program_name: &str) -> io::Result<()> {
+pub fn open_tmp(arg: &str) -> io::Result<()> {
     let mut tmp_path = env::temp_dir();
     tmp_path.push("up_tmp\\");
     for entry in fs::read_dir(tmp_path)? {
@@ -50,10 +50,19 @@ pub fn open_tmp(program_name: &str) -> io::Result<()> {
         match entry.path().file_name() {
             Some(file) => {
                 let filename = file.to_string_lossy();
-                if filename.contains(&program_name.to_string()) {
-                    let content = fs::read_to_string(entry.path())?;
-                    println!("{}:", filename.bold().yellow());
-                    println!("{content}");
+                match arg {
+                    "all" => {
+                        let content = fs::read_to_string(entry.path())?;
+                        println!("{}:", filename.bold().yellow());
+                        println!("{content}");
+                    }
+                    _ => {
+                        if filename.contains(&arg.to_string()) {
+                            let content = fs::read_to_string(entry.path())?;
+                            println!("{}:", filename.bold().yellow());
+                            println!("{content}");
+                        }
+                    }
                 }
             }
             None => {}
