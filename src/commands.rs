@@ -248,6 +248,17 @@ pub fn confirm(msg: &str) -> bool {
     }
 }
 
+pub fn list_programs(programs: &Vec<Program>) {
+    println!("{}", "Available programs:".yellow());
+    for program in programs {
+        println!(
+            "[ {} ] {}",
+            program.symbol.dimmed(),
+            program.name.truecolor(F4, F5, F6).bold()
+        );
+    }
+}
+
 // FIXME
 // pub fn exclude(programs: &Vec<Program>) -> io::Result<Vec<Program>> {
 //     let mut filtered = Vec::new();

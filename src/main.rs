@@ -9,7 +9,7 @@ pub mod commands;
 pub mod dir_work;
 pub mod programs;
 use crate::app::up;
-use crate::commands::{confirm, get_sys, init};
+use crate::commands::{confirm, get_sys, init, list_programs};
 use crate::dir_work::{check_create_dir, open_tmp, remove_tmps, show_log_file};
 use crate::programs::Program;
 
@@ -194,6 +194,10 @@ fn main() {
                 error!("Unable to open output files: {}", err);
                 process::exit(1);
             }
+        }
+        // TODO
+        Some(("list", _)) => {
+            list_programs(&programs);
         }
         // FIXME
         // Some(("exclude", _)) => {

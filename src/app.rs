@@ -27,7 +27,7 @@ pub fn up() -> Command {
         )
         .subcommand(
             Command::new("log")
-                .short_flag('l')
+                .short_flag('L')
                 .about("show content of the log file"),
         )
         .subcommand(
@@ -55,5 +55,10 @@ pub fn up() -> Command {
                 .short_flag('e'),
             // .arg(arg!(<PROGRAM> "The programs to exclude from updates").num_args(1..))
             // .arg_required_else_help(true),
+        )
+        .subcommand(
+            Command::new("list")
+                .short_flag('l')
+                .about("list all available programs"),
         )
 }
