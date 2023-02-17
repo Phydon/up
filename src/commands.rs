@@ -58,10 +58,6 @@ fn run_cmd(cmd: &str) -> Result<(), Box<dyn Error>> {
         Command::new("powershell").args(["-c", cmd]).status()?
     } else {
         unimplemented!();
-        // Command::new("sh")
-        //     .arg("-c")
-        //     .arg("echo 'not implemented yet'")
-        //     .status()?
     };
 
     Ok(())
@@ -106,16 +102,9 @@ fn progress_bar(
                     spinner.set_message(format!("{}", "updating".truecolor(F7, F8, F9),));
                     spinner.tick();
                     match arg.update_cmd {
-                        Some(cmd) => match arg.has_output {
-                            true => {
-                                run_cmd(cmd.as_str()).unwrap();
-                                arg.msg.push("Output at".to_string());
-                                arg.msg.push(arg.outputfile);
-                            }
-                            false => {
-                                run_cmd(cmd.as_str()).unwrap();
-                            }
-                        },
+                        Some(cmd) => {
+                            run_cmd(cmd.as_str()).unwrap();
+                        }
                         None => {
                             arg.msg.push("No update command found".to_string());
                         }
@@ -140,8 +129,6 @@ fn progress_bar(
                     match arg.info_cmd {
                         Some(cmd) => {
                             run_cmd(cmd.as_str()).unwrap();
-                            arg.msg.push("Output at".to_string());
-                            arg.msg.push(arg.outputfile);
                         }
                         None => {
                             arg.msg.push("No information command found".to_string());

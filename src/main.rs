@@ -2,8 +2,11 @@
 // #![cfg_attr(not(debug_assertions), windows_subsystem = "windows")]
 
 //TODO
-// add /exlude/open_tmp_files/etc commands to programs
+// add exlude, ... commands to programs
 // check if "ghcup update" works properly
+// symbol to program
+//     check if nerd font is set in terminal
+//     -> if not print first char, else print symbol if available
 pub mod app;
 pub mod commands;
 pub mod dir_work;
@@ -148,10 +151,16 @@ fn main() {
     // handle arguments
     let matches = up().get_matches();
     match matches.subcommand() {
-        Some(("run", _)) => {
+        Some(("run", sub_match)) => {
             if let Err(err) = init(programs, "update") {
                 error!("Error executing cmds: {}", err);
                 process::exit(1);
+            }
+            if sub_match.get_flag("verbose") {
+                if let Err(err) = open_tmp("all") {
+                    error!("Unable to open output files: {}", err);
+                    process::exit(1);
+                }
             }
         }
         Some(("clean", _)) => {
@@ -166,10 +175,16 @@ fn main() {
                 println!("Nevermind then");
             }
         }
-        Some(("info", _)) => {
+        Some(("info", sub_match)) => {
             if let Err(err) = init(programs, "info") {
                 error!("Error executing cmds: {}", err);
                 process::exit(1);
+            }
+            if sub_match.get_flag("verbose") {
+                if let Err(err) = open_tmp("all") {
+                    error!("Unable to open output files: {}", err);
+                    process::exit(1);
+                }
             }
             // TODO add info about one program if program is given after "up info [PROGRAM]"
             // info(sub_matches.get_one::<String>("PROGRAM").expect("required"));
