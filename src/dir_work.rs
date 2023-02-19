@@ -34,11 +34,23 @@ pub fn remove_tmps(tmp_dir_path: &str) -> io::Result<()> {
 }
 
 pub fn show_log_file() -> io::Result<String> {
-    match Path::new("up.log").try_exists()? {
+    let log_path = Path::new(&env::temp_dir()).join("up.log");
+    match log_path.try_exists()? {
         true => {
-            return Ok(fs::read_to_string("up.log")?);
+            return Ok(format!(
+                "{} {}\n{}",
+                "Log location:".italic().dimmed(),
+                &log_path.display(),
+                fs::read_to_string(&log_path)?
+            ));
         }
-        false => return Ok("No log file found".red().bold().to_string()),
+        false => {
+            return Ok(format!(
+                "{} {}",
+                "No log file found:".red().bold().to_string(),
+                log_path.display()
+            ))
+        }
     }
 }
 

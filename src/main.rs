@@ -21,18 +21,33 @@ use colored::*;
 use flexi_logger::{detailed_format, Duplicate, FileSpec, Logger};
 use log::error;
 
-use std::process;
+use std::{env, process};
 
 fn main() {
     // initialize the logger
     let _logger = Logger::try_with_str("warn") // log warn and error
         .unwrap()
         .format_for_files(detailed_format) // use timestamp for every log
-        .log_to_file(FileSpec::default().suppress_timestamp()) // no timestamps in the filename
+        .log_to_file(
+            FileSpec::default()
+                .directory(env::temp_dir())
+                .suppress_timestamp(),
+        ) // no timestamps in the filename
         .append() // use only one logfile
         .duplicate_to_stderr(Duplicate::Info) // print infos, warnings and errors also to the console
         .start()
         .unwrap();
+
+    // handle Ctrl+C
+    ctrlc::set_handler(move || {
+        println!(
+            "{} {}",
+            "🤬",
+            "Received Ctrl-C! => Exit program!".bold().yellow()
+        );
+        process::exit(0)
+    })
+    .expect("Error setting Ctrl-C handler");
 
     // get tmp dir
     let tmp_dir = check_create_dir().unwrap_or_else(|err| {
@@ -40,6 +55,7 @@ fn main() {
         process::exit(1);
     });
 
+    // TODO -> read from toml file
     // set up the programs
     let scoop = Program::new(
         "scoop",
@@ -137,17 +153,6 @@ fn main() {
     //     &tmp_dir,
     // );
     // let commands: Vec<Program> = vec![test1, test2];
-
-    // handle Ctrl+C
-    ctrlc::set_handler(move || {
-        println!(
-            "{} {}",
-            "🤬",
-            "Received Ctrl-C! => Exit program!".bold().yellow()
-        );
-        process::exit(0)
-    })
-    .expect("Error setting Ctrl-C handler");
 
     // handle arguments
     let matches = up().get_matches();
