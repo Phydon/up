@@ -1,8 +1,14 @@
+extern crate dirs;
+
 use colored::*;
+use log::error;
 
-use std::{env, fs, io, path::Path};
+use std::{
+    env, fs, io,
+    path::{Path, PathBuf},
+};
 
-pub fn check_create_dir() -> io::Result<String> {
+pub fn check_create_tmp_dir() -> io::Result<String> {
     let mut tmp_path = env::temp_dir();
     tmp_path.push("up_tmp\\");
 
@@ -33,8 +39,27 @@ pub fn remove_tmps(tmp_dir_path: &str) -> io::Result<()> {
     Ok(())
 }
 
-pub fn show_log_file() -> io::Result<String> {
-    let log_path = Path::new(&env::temp_dir()).join("up.log");
+pub fn check_create_config_dir() -> io::Result<String> {
+    let mut up_dir = PathBuf::new();
+    match dirs::config_dir() {
+        Some(config_dir) => {
+            up_dir.push(config_dir);
+            up_dir.push("up");
+            if !up_dir.as_path().exists() {
+                fs::create_dir(&up_dir)?;
+            }
+        }
+        None => {
+            error!("Unable to find config directory");
+        }
+    }
+
+    let dir = up_dir.into_os_string().into_string().unwrap();
+    Ok(dir)
+}
+
+pub fn show_log_file(config_dir: &str) -> io::Result<String> {
+    let log_path = Path::new(&config_dir).join("up.log");
     match log_path.try_exists()? {
         true => {
             return Ok(format!(
