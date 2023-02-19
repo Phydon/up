@@ -220,7 +220,7 @@ pub fn get_sys() {
 
 pub fn confirm(msg: &str) -> bool {
     loop {
-        println!("{}", msg.truecolor(F7, F8, F9));
+        println!("{}", msg.yellow().bold());
 
         let mut input = String::new();
         io::stdin()

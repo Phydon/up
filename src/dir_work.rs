@@ -58,6 +58,40 @@ pub fn check_create_config_dir() -> io::Result<String> {
     Ok(dir)
 }
 
+// FIXME
+// pub fn error_in_output(program_name: String) -> io::Result<bool> {
+//     let tmp_dir = check_create_tmp_dir()?;
+//     let config_dir = check_create_config_dir()?;
+
+//     for entry in fs::read_dir(tmp_dir)? {
+//         let entry = entry?;
+//         if entry.path().is_file() {
+//             match entry.path().file_name() {
+//                 Some(file) => {
+//                     let filename = file.to_string_lossy();
+//                     if filename.contains(&program_name) {
+//                         let content = fs::read_to_string(entry.path())?;
+//                         if content.contains("error")
+//                             || content.contains("Error")
+//                             || content.contains("ERROR")
+//                         {
+//                             let mut log_file = String::from(&config_dir);
+//                             log_file.push_str("up.log");
+//                             if !log_file.contains(filename.as_ref()) {
+//                                 error!("Error in {}:\n{}", filename, content);
+//                                 return Ok(true);
+//                             }
+//                         }
+//                     }
+//                 }
+//                 None => {}
+//             }
+//         }
+//     }
+
+//     Ok(false)
+// }
+
 pub fn show_log_file(config_dir: &str) -> io::Result<String> {
     let log_path = Path::new(&config_dir).join("up.log");
     match log_path.try_exists()? {

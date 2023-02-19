@@ -55,7 +55,7 @@ fn main() {
             FileSpec::default()
                 .directory(&config_dir)
                 .suppress_timestamp(),
-        ) // no timestamps in the filename
+        ) // change directory for logs, no timestamps in the filename
         .append() // use only one logfile
         .duplicate_to_stderr(Duplicate::Info) // print infos, warnings and errors also to the console
         .start()
