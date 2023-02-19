@@ -104,7 +104,7 @@ fn main() {
     let pip = Program::new(
         "pip",
         Some(""),
-        "py",
+        "python",
         true,
         true,
         Some("-m pip install --upgrade pip"),
