@@ -177,7 +177,13 @@ fn main() {
             }
         }
         Some(("clean", _)) => {
-            if confirm("Do you really want to delete all temporary files? (y/n)") {
+            let msg = format!(
+                "{}",
+                "Do you really want to delete all temporary files? (y/n)"
+                    .red()
+                    .bold()
+            );
+            if confirm(&msg) {
                 if let Err(err) = remove_tmps(&tmp_dir) {
                     error!("Error while cleaning temporary directory: {}", err);
                     process::exit(1);

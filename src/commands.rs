@@ -22,13 +22,23 @@ const B1: u8 = 41;
 const B2: u8 = 0;
 const B3: u8 = 25;
 // green
-const F4: u8 = 10;
-const F5: u8 = 255;
-const F6: u8 = 169;
+// const F4: u8 = 10;
+// const F5: u8 = 255;
+// const F6: u8 = 169;
+const F4: u8 = 59;
+const F5: u8 = 179;
+const F6: u8 = 140;
 // purple
-const F7: u8 = 127;
-const F8: u8 = 83;
+// const F7: u8 = 127;
+// const F8: u8 = 83;
+// const F9: u8 = 191;
+const F7: u8 = 116;
+const F8: u8 = 58;
 const F9: u8 = 191;
+// blue
+const F10: u8 = 127;
+const F11: u8 = 111;
+const F12: u8 = 219;
 
 pub fn init(commands: Vec<Program>, mode: &str) -> Result<(), Box<dyn Error>> {
     let num = commands.len() as u64;
@@ -94,12 +104,12 @@ fn progress_bar(
             spinner.set_prefix(format!(
                 "[ {} ] {}{}",
                 arg.symbol.dimmed(),
-                arg.name.truecolor(F7, F8, F9),
+                arg.name.truecolor(F10, F11, F12),
                 arg.placeholder
             ));
             match mode {
                 "update" => thread::spawn(move || {
-                    spinner.set_message(format!("{}", "updating".truecolor(F7, F8, F9),));
+                    spinner.set_message(format!("{}", "updating".truecolor(F10, F11, F12),));
                     spinner.tick();
                     match arg.update_cmd {
                         Some(cmd) => {
@@ -124,14 +134,14 @@ fn progress_bar(
                     pb.inc(1);
                 }),
                 "info" => thread::spawn(move || {
-                    spinner.set_message(format!("{}", "collecting info".truecolor(F7, F8, F9),));
+                    spinner.set_message(format!("{}", "collecting info".truecolor(F10, F11, F12),));
                     spinner.tick();
                     match arg.info_cmd {
                         Some(cmd) => {
                             run_cmd(cmd.as_str()).unwrap();
                         }
                         None => {
-                            arg.msg.push("No information command found".to_string());
+                            arg.msg.push("No information found".to_string());
                         }
                     }
                     spinner.finish_with_message(match arg.msg.is_empty() {
@@ -190,37 +200,37 @@ pub fn get_sys() {
 
     // Display system information:
     println!(
-        "{}:             {}",
-        "System name".truecolor(F7, F8, F9),
+        "{}             {}",
+        "System name:".truecolor(F10, F11, F12),
         sys.name().unwrap().truecolor(F4, F5, F6).bold()
     );
     println!(
-        "{}:   {}",
-        "System kernel version".truecolor(F7, F8, F9),
+        "{}   {}",
+        "System kernel version:".truecolor(F10, F11, F12),
         sys.kernel_version().unwrap().truecolor(F4, F5, F6).bold()
     );
     println!(
         "{}       {}",
-        "System OS version:".truecolor(F7, F8, F9),
+        "System OS version:".truecolor(F10, F11, F12),
         sys.os_version().unwrap().truecolor(F4, F5, F6).bold()
     );
     println!(
         "{}        {}",
-        "System host name:".truecolor(F7, F8, F9),
+        "System host name:".truecolor(F10, F11, F12),
         sys.host_name().unwrap().truecolor(F4, F5, F6).bold()
     );
 
     // Number of CPUs:
     println!(
         "{}          {}",
-        "Number of CPUs:".truecolor(F7, F8, F9),
+        "Number of CPUs:".truecolor(F10, F11, F12),
         sys.cpus().len().to_string().truecolor(F4, F5, F6).bold()
     );
 }
 
 pub fn confirm(msg: &str) -> bool {
     loop {
-        println!("{}", msg.yellow().bold());
+        println!("{}", msg);
 
         let mut input = String::new();
         io::stdin()
