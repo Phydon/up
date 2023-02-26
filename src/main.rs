@@ -2,9 +2,10 @@
 // #![cfg_attr(not(debug_assertions), windows_subsystem = "windows")]
 
 //TODO
+// check if "ghcup update" works properly
+// check for command/subcommand/arg conflicts (clap -> conflicts_with)
 // add "exlude" command
 // add "show outputfile location" command
-// check if "ghcup update" works properly
 // symbol to program
 //     check if nerd font is set in terminal
 //     -> if not print first char, else print symbol if available
