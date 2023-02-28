@@ -3,13 +3,12 @@
 **Update programs, get status or system information**
 
 Command line tool to update several programs at the same time
-* Update programs 
+* Update programs
 * Get status information about the programs
-* list all included programs
-* show the output of the last update or status request
-* Clean the temporary directory and remove all output
+* List all included programs
+* Show the output of the last update or status request
+* Remove all stored output
 * Get quick system information
-* list all included programs
 
 ![screenshot](https://github.com/Phydon/up/blob/master/assets/screenshot_starting_update.png)
 ![screenshot](https://github.com/Phydon/up/blob/master/assets/screenshot_updating.png)
@@ -17,7 +16,8 @@ Command line tool to update several programs at the same time
 
 ## Usage
 
-Usage: up.exe <COMMAND>
+```
+up.exe <COMMAND>
 
 Commands:
   clean, -c  Remove all temporary files
@@ -32,9 +32,9 @@ Commands:
 Options:
   -h, --help     Print help
   -V, --version  Print version
+```
 
-
-### TODO
+## TODO
 
 * exclude programs
 * read in programs to update from a config file
