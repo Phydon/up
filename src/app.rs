@@ -1,8 +1,15 @@
 use clap::{arg, ArgAction, Command};
+use colored::*;
 
 // TODO how to run only by typing in the name of the program (-> "up")
 pub fn up() -> Command {
     Command::new("up")
+        .bin_name("up")
+        .before_help(format!(
+            "{}\n{}",
+            "UP".bold().truecolor(250, 0, 104),
+            "Leann Phydon <leann.phydon@gmail.com>".italic().dimmed()
+        ))
         .about("Update programs, get status or system information.")
         .version("1.0.0")
         .author("Leann Phydon <leann.phydon@gmail.com")
