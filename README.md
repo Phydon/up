@@ -11,7 +11,9 @@ Command line tool to update several programs at the same time
 * Get quick system information
 
 ![screenshot](https://github.com/Phydon/up/blob/master/assets/screenshot_starting_update.png)
+
 ![screenshot](https://github.com/Phydon/up/blob/master/assets/screenshot_updating.png)
+
 ![screenshot](https://github.com/Phydon/up/blob/master/assets/screenshot_update_done.png)
 
 ## Usage
