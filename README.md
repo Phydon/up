@@ -19,7 +19,7 @@ Command line tool to update several programs at the same time
 ## Usage
 
 ```
-up.exe <COMMAND>
+up <COMMAND>
 
 Commands:
   clean, -c  Remove all temporary files
@@ -41,4 +41,5 @@ Options:
 * exclude programs
 * read in programs to update from a config file
 * add new programs via command line (e.g. "up add") to this config file
+* colored output as an optional flag or make different colors available
 
