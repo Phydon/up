@@ -36,6 +36,10 @@ Options:
   -V, --version  Print version
 ```
 
+## Installation
+
+> Installation via cargo (for now)
+
 ## TODO
 
 * exclude programs
