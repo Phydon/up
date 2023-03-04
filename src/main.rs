@@ -2,7 +2,6 @@
 // #![cfg_attr(not(debug_assertions), windows_subsystem = "windows")]
 
 //TODO
-// check if "ghcup update" works properly
 // check for command/subcommand/arg conflicts (clap -> conflicts_with)
 // add "exlude" command
 // add "show outputfile location" command
@@ -163,19 +162,8 @@ fn main() {
 
     // handle arguments
     let matches = up().get_matches();
+    let verbose_flag = matches.get_flag("verbose");
     match matches.subcommand() {
-        Some(("run", sub_match)) => {
-            if let Err(err) = init(programs, "update") {
-                error!("Error executing cmds: {}", err);
-                process::exit(1);
-            }
-            if sub_match.get_flag("verbose") {
-                if let Err(err) = open_tmp("all") {
-                    error!("Unable to open output files: {}", err);
-                    process::exit(1);
-                }
-            }
-        }
         Some(("clean", _)) => {
             let msg = format!(
                 "{}",
@@ -252,6 +240,17 @@ fn main() {
         //     process::exit(1);
         // }
         // }
-        _ => unreachable!(),
+        _ => {
+            if let Err(err) = init(programs, "update") {
+                error!("Error executing cmds: {}", err);
+                process::exit(1);
+            }
+            if verbose_flag {
+                if let Err(err) = open_tmp("all") {
+                    error!("Unable to open output files: {}", err);
+                    process::exit(1);
+                }
+            }
+        }
     }
 }

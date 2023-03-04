@@ -13,13 +13,14 @@ pub fn up() -> Command {
         .about("Update programs, get status or system information.")
         .version("1.0.0")
         .author("Leann Phydon <leann.phydon@gmail.com")
-        .subcommand_required(true)
-        .arg_required_else_help(true)
+        // .subcommand_required(true)
+        // .arg_required_else_help(true)
         .subcommand(
             Command::new("clean")
                 .short_flag('c')
                 .about("Remove all temporary files")
         )
+        .arg(arg!(-v --verbose "show output").action(ArgAction::SetTrue))
         // .subcommand(
         //     Command::new("exclude")
         //         .about("Exclude programs from update")
@@ -54,15 +55,6 @@ pub fn up() -> Command {
                 .about("Open the output files for the specified program")
                 .arg(arg!(<PROGRAM> "The program for which the output should be displayed \nEnter \"all\" to open all available output files"))
                 .arg_required_else_help(true)
-        )
-        .subcommand(
-            Command::new("run")
-                .short_flag('r')
-                .about("Run updates")
-                .arg(
-                    arg!(-v --verbose "show output")
-                        .action(ArgAction::SetTrue)
-                )
         )
         .subcommand(
             Command::new("sys")
