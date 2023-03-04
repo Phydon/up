@@ -15,12 +15,13 @@ pub mod programs;
 use crate::app::up;
 use crate::commands::{confirm, get_sys, init, list_programs};
 use crate::dir_work::*;
-use crate::programs::Program;
+use crate::programs::load_programs;
 
 use colored::*;
 use flexi_logger::{detailed_format, Duplicate, FileSpec, Logger};
 use log::error;
 
+use std::path::Path;
 use std::process;
 
 fn main() {
@@ -61,80 +62,12 @@ fn main() {
         .start()
         .unwrap();
 
-    // TODO -> read from config file
-    // set up the programs
-    let scoop = Program::new(
-        "scoop",
-        None,
-        "powershell",
-        true,
-        true,
-        Some("-c scoop update --all"),
-        Some("-c scoop status"),
-        &tmp_dir,
-    );
-    let winget = Program::new(
-        "winget",
-        None,
-        "winget",
-        true,
-        true,
-        Some("upgrade"),
-        Some("--info"),
-        &tmp_dir,
-    );
-    let rust = Program::new(
-        "rust",
-        Some(""),
-        "rustup",
-        true,
-        true,
-        Some("update"),
-        Some("check"),
-        &tmp_dir,
-    );
-    let haskell = Program::new(
-        "haskell",
-        Some(""),
-        "ghcup",
-        true,
-        true,
-        Some("update"),
-        Some("list"),
-        &tmp_dir,
-    );
-    let vim = Program::new(
-        "vim",
-        None,
-        "vim",
-        true,
-        false,
-        Some("-c PlugUpdate -c qa"),
-        None,
-        &tmp_dir,
-    );
-    let nvim = Program::new(
-        "neovim",
-        None,
-        "nvim",
-        true,
-        false,
-        Some("-c PlugUpdate -c qa"),
-        None,
-        &tmp_dir,
-    );
-    let pip = Program::new(
-        "pip",
-        Some(""),
-        "python",
-        true,
-        true,
-        Some("-m pip install --upgrade pip"),
-        Some("-m pip check"),
-        &tmp_dir,
-    );
-
-    let programs: Vec<Program> = vec![haskell, nvim, pip, rust, scoop, vim, winget];
+    // set up the programs from config file
+    let ron = Path::new(&config_dir).join("up_config.ron");
+    // TODO handle unwrap
+    // TODO check if exists, if not: create default with example
+    // TODO check how ron handles comments
+    let programs = load_programs(ron).unwrap();
 
     // handle arguments
     let matches = up().get_matches();
