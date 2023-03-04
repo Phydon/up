@@ -61,7 +61,7 @@ fn main() {
         .start()
         .unwrap();
 
-    // TODO -> read from toml file
+    // TODO -> read from config file
     // set up the programs
     let scoop = Program::new(
         "scoop",
@@ -135,30 +135,6 @@ fn main() {
     );
 
     let programs: Vec<Program> = vec![haskell, nvim, pip, rust, scoop, vim, winget];
-
-    // for testing
-    // println!("{}", "Testing activated".italic().yellow());
-    // let test1 = Program::new(
-    //     "test1",
-    //     None,
-    //     "powershell",
-    //     true,
-    //     true,
-    //     Some("-c Start-Sleep -Seconds 3"),
-    //     None,
-    //     &tmp_dir,
-    // );
-    // let test2 = Program::new(
-    //     "testing2",
-    //     None,
-    //     "powershell",
-    //     false,
-    //     false,
-    //     Some("-c Start-Sleep -Seconds 5"),
-    //     None,
-    //     &tmp_dir,
-    // );
-    // let commands: Vec<Program> = vec![test1, test2];
 
     // handle arguments
     let matches = up().get_matches();

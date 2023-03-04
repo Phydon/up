@@ -13,8 +13,6 @@ pub fn up() -> Command {
         .about("Update programs, get status or system information.")
         .version("1.0.0")
         .author("Leann Phydon <leann.phydon@gmail.com")
-        // .subcommand_required(true)
-        // .arg_required_else_help(true)
         .subcommand(
             Command::new("clean")
                 .short_flag('c')
