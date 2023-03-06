@@ -3,7 +3,9 @@
 **Update programs, get status or system information**
 
 Command line tool to update several programs at the same time
-* Update programs
+* reads in programs from a config file
+* creates a default config file if no config file exists
+* Update programs from that config file
 * Get status information about the programs
 * List all included programs
 * Show the output of the last update or status request
@@ -18,6 +20,9 @@ Command line tool to update several programs at the same time
 
 ## Usage
 
+* run ```up``` to update all programs
+
+
 ```
 up <COMMAND>
 
@@ -27,7 +32,6 @@ Commands:
   list, -l   List all available programs
   log, -L    Show content of the log file
   open, -o   Open the output files for the specified program
-  run, -r    Run updates
   sys, -s    Show system information
   help       Print this message or the help of the given subcommand(s)
 
@@ -38,12 +42,11 @@ Options:
 
 ## Installation
 
-> Installation via cargo (for now)
+via Cargo or get the ![binary](https://github.com/Phydon/up/releases)
 
 ## TODO
 
 * exclude programs
-* read in programs to update from a config file
-* add new programs via command line (e.g. "up add") to this config file
+* add new programs via command line (e.g. "up add") to config file
 * colored output as an optional flag or make different colors available
 
