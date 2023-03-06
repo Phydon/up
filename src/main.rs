@@ -64,10 +64,10 @@ fn main() {
 
     // set up the programs from config file
     let ron = Path::new(&config_dir).join("up_config.ron");
-    // TODO handle unwrap
-    // TODO check if exists, if not: create default with example
-    // TODO check how ron handles comments
-    let programs = load_programs(ron).unwrap();
+    let programs = load_programs(&ron).unwrap_or_else(|err| {
+        error!("Unable to load programs from {}: {}", ron.display(), err);
+        process::exit(1);
+    });
 
     // handle arguments
     let matches = up().get_matches();

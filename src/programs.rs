@@ -2,27 +2,32 @@ use chrono::Local;
 use log::error;
 use serde::Deserialize;
 
-use std::{fmt, fs::File, io, path::PathBuf, process};
+use std::{
+    fmt,
+    fs::{self, File},
+    io,
+    path::PathBuf,
+    process,
+};
 
 use crate::dir_work::check_create_tmp_dir;
 
 const PLACEHOLDER_THRESHOLD: usize = 8;
 
-// TODO check if "pub" is needed everywhere
 #[derive(Clone, Deserialize)]
-pub struct Config {
-    pub apps: Vec<App>,
+struct Config {
+    apps: Vec<App>,
 }
 
 #[derive(Clone, Deserialize)]
-pub struct App {
-    pub name: String,
-    pub symbol: Option<String>,
-    pub executer: String,
-    pub start_extern: bool,
-    pub has_output: bool,
-    pub cmd_for_update: Option<String>,
-    pub cmd_for_info: Option<String>,
+struct App {
+    name: String,
+    symbol: Option<String>,
+    executer: String,
+    start_extern: bool,
+    has_output: bool,
+    cmd_for_update: Option<String>,
+    cmd_for_info: Option<String>,
 }
 
 #[derive(Clone)]
@@ -168,10 +173,38 @@ impl Program {
     }
 }
 
-pub fn load_programs(path: PathBuf) -> io::Result<Vec<Program>> {
+pub fn load_programs(path: &PathBuf) -> io::Result<Vec<Program>> {
+    if !path.as_path().exists() {
+        let default_content = format!(
+            "// {}\n// {}\n// {}\n// {}\n// {}\n// {}\n// {}\n// {}\n// {}\n// {}\n// {}\n// {}\n// {}\n// {}\n// {}\n// {}\n// {}\n// {}\n{}",
+            "Usage:\n",
+            "App(",
+            "\tname: \"example\",",
+            "\tsymbol: None,",
+            "\texecuter: \"example\",",
+            "\tstart_extern: true,",
+            "\thas_output: true,",
+            "\tcmd_for_update: Some(\"-c example update --all\"),",
+            "\tcmd_for_info: Some(\"-c example status\"),",
+            "),\n",
+            "Values to replace:",
+            "<name>           => a custom name for the program",
+            "<symbol>         => if symbol is \"None\", the first character of the name will be used; options: [Some(\"<symbol>\"), None]",
+            "<excuter>        => the actual program to call from the command line (often the name of the program itself)",
+            "<start_extern>   => should only be \"false\" if no output will be produced and no external program starts; options [true, false]",
+            "<has_output>     => used to write the output in a temporary file for later reference; options [true, false]",
+            "<cmd_for_update> => the actual command to update the program; options: [Some(\"<cmd_for_update>\"), None]",
+            "<cmd_for_info>   => the actual command to get status information about the program; options: [Some(\"<cmd_for_info>\"), None]\n",
+            "(\n \tapps: [\n \t\tApp(\n \t\t\tname: \"example\",\n \t\t\tsymbol: None,\n \t\t\texecuter: \"example\",\n \t\t\tstart_extern: true,\n \t\t\thas_output: true,\n \t\t\tcmd_for_update: None,\n \t\t\tcmd_for_info: None,\n \t\t),\n \t],\n)"
+        );
+        fs::write(&path, default_content)?;
+    }
+
     let file = File::open(path)?;
-    // TODO handle unwrap
-    let config: Config = ron::de::from_reader(file).unwrap();
+    let config: Config = ron::de::from_reader(file).unwrap_or_else(|err| {
+        error!("Unable to read ron file {}: {}", path.display(), err);
+        process::exit(1);
+    });
 
     let mut programs = Vec::new();
     for app in config.apps {

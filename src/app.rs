@@ -1,7 +1,6 @@
 use clap::{arg, ArgAction, Command};
 use colored::*;
 
-// TODO how to run only by typing in the name of the program (-> "up")
 pub fn up() -> Command {
     Command::new("up")
         .bin_name("up")
