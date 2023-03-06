@@ -3,7 +3,8 @@
 **Update programs, get status or system information**
 
 Command line tool to update several programs at the same time
-* reads in programs from a config file
+* read in programs from a config file 
+  - location: _C:/Users/Username/Appdata/Roaming/up/up_config.ron_
 * creates a default config file if no config file exists
 * Update programs from that config file
 * Get status information about the programs
@@ -41,6 +42,8 @@ Options:
 ```
 
 ## Installation
+
+### Windows
 
 via Cargo or get the ![binary](https://github.com/Phydon/up/releases)
 
