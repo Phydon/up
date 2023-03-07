@@ -136,18 +136,30 @@ impl Program {
         match cmd {
             Some(cmd) => match start_extern {
                 true => {
-                    collected_cmds.push_str("Start-Process ");
-                    collected_cmds.push_str(&executer);
-                    collected_cmds.push_str(" -ArgumentList '");
-                    collected_cmds.push_str(&cmd);
-                    collected_cmds.push_str("'");
-                    if has_output {
-                        collected_cmds.push_str("-RedirectStandardOutput ");
-                        collected_cmds.push_str(output.as_str());
-                    }
-                    collected_cmds.push_str(" -WindowStyle Hidden");
-                    collected_cmds.push_str(" -Wait");
-                    collected_cmds.push_str(";");
+                    if cfg!(target_os = "windows") {
+                        collected_cmds.push_str("Start-Process ");
+                        collected_cmds.push_str(&executer);
+                        collected_cmds.push_str(" -ArgumentList '");
+                        collected_cmds.push_str(&cmd);
+                        collected_cmds.push_str("'");
+                        if has_output {
+                            collected_cmds.push_str("-RedirectStandardOutput ");
+                            collected_cmds.push_str(output.as_str());
+                        }
+                        collected_cmds.push_str(" -WindowStyle Hidden");
+                        collected_cmds.push_str(" -Wait");
+                        collected_cmds.push_str(";");
+                   } else {
+                        collected_cmds.push_str(&executer);
+                        collected_cmds.push_str(" ");
+                        collected_cmds.push_str(&cmd);
+
+                        if has_output {
+                            collected_cmds.push_str(" > ");
+                            collected_cmds.push_str(output.as_str());
+                        }
+
+                   }
                 }
                 false => {
                     collected_cmds.push_str(&executer);
