@@ -67,7 +67,7 @@ fn run_cmd(cmd: &str) -> Result<(), Box<dyn Error>> {
     if cfg!(target_os = "windows") {
         Command::new("powershell").args(["-c", cmd]).status()?
     } else {
-        unimplemented!();
+        Command::new("sh").arg("-c").arg(cmd).status()?
     };
 
     Ok(())

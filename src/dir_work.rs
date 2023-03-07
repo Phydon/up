@@ -10,7 +10,12 @@ use std::{
 
 pub fn check_create_tmp_dir() -> io::Result<String> {
     let mut tmp_path = env::temp_dir();
-    tmp_path.push("up_tmp\\");
+    
+    if cfg!(target_os = "windows") {
+        tmp_path.push("up_tmp\\");
+    } else {
+        tmp_path.push("up_tmp/");
+    }
 
     if !tmp_path.as_path().exists() {
         fs::create_dir(&tmp_path)?;
