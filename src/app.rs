@@ -15,6 +15,7 @@ pub fn up() -> Command {
         .subcommand(
             Command::new("clean")
                 .short_flag('c')
+                .long_flag("clean")
                 .about("Remove all temporary files")
         )
         .arg(arg!(-v --verbose "show output").action(ArgAction::SetTrue))
@@ -29,6 +30,7 @@ pub fn up() -> Command {
             Command::new("info")
                 .about("Get status information (saved in output files)")
                 .short_flag('i')
+                .long_flag("info")
                 .arg(
                     arg!(-v --verbose "show output")
                         .action(ArgAction::SetTrue)
@@ -39,6 +41,7 @@ pub fn up() -> Command {
         .subcommand(
             Command::new("list")
                 .short_flag('l')
+                .long_flag("list")
                 .about("List all available programs")
         )
         .subcommand(
@@ -50,6 +53,7 @@ pub fn up() -> Command {
         .subcommand(
             Command::new("open")
                 .short_flag('o')
+                .long_flag("open")
                 .about("Open the output files for the specified program")
                 .arg(arg!(<PROGRAM> "The program for which the output should be displayed \nEnter \"all\" to open all available output files"))
                 .arg_required_else_help(true)
@@ -57,6 +61,7 @@ pub fn up() -> Command {
         .subcommand(
             Command::new("sys")
                 .short_flag('s')
+                .long_flag("sys")
                 .about("Show system information")
         )
 }
