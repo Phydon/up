@@ -11,7 +11,7 @@ pub fn up() -> Command {
         ))
         .about("Update programs, get status or system information.")
         // TODO update version
-        .version("1.0.1")
+        .version("1.0.2")
         .author("Leann Phydon <leann.phydon@gmail.com")
         .subcommand(
             Command::new("clean")
