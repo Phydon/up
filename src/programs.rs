@@ -145,9 +145,7 @@ impl Program {
                         collected_cmds.push_str("-RedirectStandardOutput ");
                         collected_cmds.push_str(output.as_str());
                     }
-                    collected_cmds.push_str(" -WindowStyle Hidden");
-                    collected_cmds.push_str(" -Wait");
-                    collected_cmds.push_str(";");
+                    collected_cmds.push_str(" -WindowStyle Hidden -Wait;");
                 }
                 false => {
                     collected_cmds.push_str(&executer);

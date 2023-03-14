@@ -10,7 +10,8 @@ pub fn up() -> Command {
             "Leann Phydon <leann.phydon@gmail.com>".italic().dimmed()
         ))
         .about("Update programs, get status or system information.")
-        .version("1.0.0")
+        // TODO update version
+        .version("1.0.1")
         .author("Leann Phydon <leann.phydon@gmail.com")
         .subcommand(
             Command::new("clean")

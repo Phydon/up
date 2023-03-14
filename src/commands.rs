@@ -15,12 +15,12 @@ use std::{
 
 // Colors
 // darkpurple background, red foreground
-const F1: u8 = 255;
-const F2: u8 = 46;
-const F3: u8 = 95;
-const B1: u8 = 41;
-const B2: u8 = 0;
-const B3: u8 = 25;
+// const F1: u8 = 255;
+// const F2: u8 = 46;
+// const F3: u8 = 95;
+// const B1: u8 = 41;
+// const B2: u8 = 0;
+// const B3: u8 = 25;
 // green
 // const F4: u8 = 10;
 // const F5: u8 = 255;
@@ -32,9 +32,9 @@ const F6: u8 = 140;
 // const F7: u8 = 127;
 // const F8: u8 = 83;
 // const F9: u8 = 191;
-const F7: u8 = 116;
-const F8: u8 = 58;
-const F9: u8 = 191;
+// const F7: u8 = 116;
+// const F8: u8 = 58;
+// const F9: u8 = 191;
 // blue
 const F10: u8 = 127;
 const F11: u8 = 111;
@@ -44,14 +44,20 @@ pub fn init(commands: Vec<Program>, mode: &str) -> Result<(), Box<dyn Error>> {
     let num = commands.len() as u64;
     match mode {
         "update" => {
-            println!("{} {}", "↗", "STARTING UPDATE".bold().truecolor(F7, F8, F9));
+            println!(
+                "{} {}",
+                "↗",
+                // "STARTING UPDATE".bold().truecolor(250, 0, 104)
+                "STARTING UPDATE".bold()
+            );
             progress_bar(commands, num, "update")?;
         }
         "info" => {
             println!(
                 "{} {}",
                 "🛈",
-                "GETTING INFORMATION".bold().truecolor(F7, F8, F9)
+                // "GETTING INFORMATION".bold().truecolor(250, 0, 104)
+                "GETTING INFORMATION".bold()
             );
             progress_bar(commands, num, "info")?;
         }
@@ -84,11 +90,11 @@ fn progress_bar(
 
     let m = Arc::new(MultiProgress::new());
     let sty = ProgressStyle::with_template(
-        "{spinner:.red} [{elapsed_precise}] {bar:40.red/white} {pos:>5}/{len:5} {eta:5} {msg}",
+        "{spinner:.red} [{elapsed_precise}] {bar:40.white/white} {pos:>3}/{len:2} {percent}% {msg:>5}",
     )
     .unwrap()
-    // .progress_chars("#>-");
-    .progress_chars("=>-");
+    // .progress_chars("=>-");
+    .progress_chars("=>:");
 
     let pb = m.add(ProgressBar::new(num));
     pb.set_style(sty);
@@ -104,12 +110,13 @@ fn progress_bar(
             spinner.set_prefix(format!(
                 "[ {} ] {}{}",
                 arg.symbol.dimmed(),
-                arg.name.truecolor(F10, F11, F12),
+                arg.name.bold(),
+                // arg.name.truecolor(127, 111, 219).dimmed(),
                 arg.placeholder
             ));
             match mode {
                 "update" => thread::spawn(move || {
-                    spinner.set_message(format!("{}", "updating".truecolor(F10, F11, F12),));
+                    spinner.set_message(format!("{}", "updating".truecolor(250, 0, 104),));
                     spinner.tick();
                     match arg.update_cmd {
                         Some(cmd) => {
@@ -121,12 +128,12 @@ fn progress_bar(
                     }
                     spinner.finish_with_message(match arg.msg.is_empty() {
                         true => {
-                            format!("{}", "done".truecolor(F4, F5, F6))
+                            format!("{}", "done".truecolor(59, 179, 140))
                         }
                         false => {
                             format!(
                                 "{}    \t|  {}",
-                                "done".truecolor(F4, F5, F6),
+                                "done".truecolor(59, 179, 140),
                                 arg.msg.join(" "),
                             )
                         }
@@ -134,7 +141,7 @@ fn progress_bar(
                     pb.inc(1);
                 }),
                 "info" => thread::spawn(move || {
-                    spinner.set_message(format!("{}", "collecting info".truecolor(F10, F11, F12),));
+                    spinner.set_message(format!("{}", "collecting info".truecolor(250, 0, 104),));
                     spinner.tick();
                     match arg.info_cmd {
                         Some(cmd) => {
@@ -146,12 +153,12 @@ fn progress_bar(
                     }
                     spinner.finish_with_message(match arg.msg.is_empty() {
                         true => {
-                            format!("{}", "done".truecolor(F4, F5, F6))
+                            format!("{}", "done".truecolor(59, 179, 140))
                         }
                         false => {
                             format!(
                                 "{}    \t|  {}",
-                                "done".truecolor(F4, F5, F6),
+                                "done".truecolor(59, 179, 140),
                                 arg.msg.join(" "),
                             )
                         }
@@ -169,20 +176,17 @@ fn progress_bar(
         let _ = h.join();
     }
 
-    pb.finish_with_message(format!("{}", "done".bold().truecolor(F4, F5, F6)));
+    pb.finish_with_message(format!("{}", "done".bold().truecolor(59, 179, 140)));
 
     // m.clear().unwrap();
 
     println!(
         "{} {} {}",
         "✔",
-        "ALL DONE IN ".bold().truecolor(F4, F5, F6),
+        "all done in".truecolor(59, 179, 140),
         HumanDuration(started.elapsed())
             .to_string()
-            .to_uppercase()
-            .bold()
-            .truecolor(F1, F2, F3)
-            .on_truecolor(B1, B2, B3)
+            .truecolor(127, 111, 219)
     );
 
     Ok(m)
