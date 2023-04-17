@@ -1,13 +1,6 @@
 // hide console window on Windows in release
 // #![cfg_attr(not(debug_assertions), windows_subsystem = "windows")]
 
-//TODO
-// check for command/subcommand/arg conflicts (clap -> conflicts_with)
-// add "exlude" command
-// add "show outputfile location" command
-// symbol to program
-//     check if nerd font is set in terminal
-//     -> if not print first char, else print symbol if available
 pub mod app;
 pub mod commands;
 pub mod dir_work;
@@ -28,9 +21,11 @@ fn main() {
     // handle Ctrl+C
     ctrlc::set_handler(move || {
         println!(
-            "{} {}",
+            "{} {} {} {}",
+            "Received Ctrl-C!".bold().red(),
             "🤬",
-            "Received Ctrl-C! => Exit program!".bold().yellow()
+            "Exit program!".bold().red(),
+            "☠",
         );
         process::exit(0)
     })

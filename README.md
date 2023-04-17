@@ -24,19 +24,21 @@ Command line tool to update several programs at the same time
 * run ```up``` to update all programs
 
 
+### Short Usage
 ```
-up <COMMAND>
+up [OPTIONS] [COMMAND]
 
 Commands:
-  clean, -c  Remove all temporary files
-  info, -i   Get status information (saved in output files)
-  list, -l   List all available programs
-  log, -L    Show content of the log file
-  open, -o   Open the output files for the specified program
-  sys, -s    Show system information
-  help       Print this message or the help of the given subcommand(s)
+  clean, -c, --clean  Remove all temporary files
+  info, -i, --info    Get status information (saved in output files)
+  list, -l, --list    List all available programs
+  log, -L, --log      Show content of the log file
+  open, -o, --open    Open the output files for the specified program
+  sys, -s, --sys      Show system information
+  help                Print this message or the help of the given subcommand(s)
 
 Options:
+  -v, --verbose  show output
   -h, --help     Print help
   -V, --version  Print version
 ```
