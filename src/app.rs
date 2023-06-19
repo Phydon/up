@@ -1,5 +1,5 @@
 use clap::{arg, ArgAction, Command};
-use colored::*;
+use owo_colors::colored::*;
 
 pub fn up() -> Command {
     Command::new("up")
@@ -11,7 +11,7 @@ pub fn up() -> Command {
         ))
         .about("Update programs, get status or system information.")
         // TODO update version
-        .version("1.0.2")
+        .version("1.0.3")
         .author("Leann Phydon <leann.phydon@gmail.com")
         .subcommand(
             Command::new("clean")

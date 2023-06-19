@@ -10,9 +10,9 @@ use crate::commands::{confirm, get_sys, init, list_programs};
 use crate::dir_work::*;
 use crate::programs::load_programs;
 
-use colored::*;
 use flexi_logger::{detailed_format, Duplicate, FileSpec, Logger};
 use log::error;
+use owo_colors::colored::*;
 
 use std::path::Path;
 use std::process;

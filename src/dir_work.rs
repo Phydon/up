@@ -1,7 +1,7 @@
 extern crate dirs;
 
-use colored::*;
 use log::error;
+use owo_colors::colored::*;
 
 use std::{
     env, fs, io,

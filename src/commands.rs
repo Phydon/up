@@ -1,7 +1,7 @@
 use crate::programs::Program;
 
-use colored::*;
 use indicatif::{HumanDuration, MultiProgress, ProgressBar, ProgressStyle};
+use owo_colors::colored::*;
 use sysinfo::{CpuRefreshKind, RefreshKind, System, SystemExt};
 
 use std::{
